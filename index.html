@@ -2496,7 +2496,8 @@
       grid-template-columns: repeat(var(--menu-count, 11), minmax(0, 1fr));
       align-items: center;
       justify-content: stretch;
-      gap: 4px;
+      /* 메가메뉴와 동일하게 여백 없이 균등 분할해 각 1Depth 중심선을 맞춘다. */
+      gap: 0;
       min-width: 0;
       width: 100%;
       min-height: 46px;
@@ -2638,8 +2639,10 @@
     /* ── 전체폭 메가 드롭다운 (hover 시 표시) ── */
     .top-mega-menu {
       position: absolute;
-      left: 0;
-      right: 0;
+      /* GNB 메뉴 영역(.lnb의 좌우 22px 여백)과 같은 기준선을 사용한다.
+         그래서 hover 시 펼쳐지는 각 메가 컬럼의 중심이 대메뉴 중심과 일치한다. */
+      left: 22px;
+      right: 22px;
       top: 100%;
       z-index: 400;
       display: none;
@@ -3387,8 +3390,9 @@
         display: none;
       }
       .top-mega-menu {
-        left: 12px;
-        right: 12px;
+        /* 축소 화면에서도 GNB의 좌우 padding(14px)과 정렬 */
+        left: 14px;
+        right: 14px;
         grid-template-columns: repeat(2, minmax(140px, 1fr));
         max-height: 62vh;
         overflow-y: auto;
@@ -3745,6 +3749,7 @@
 
     <div class="header-center">
       <span id="user-greeting">이희성 부장</span> 님 안녕하세요
+      <a href="#" class="logout-btn" onclick="selectMenu('login-1','로그인'); return false;">[로그인]</a>
       <a href="#" class="logout-btn" onclick="alert('로그아웃 되었습니다.')">[로그아웃]</a>
     </div>
 
@@ -4020,17 +4025,18 @@
     /* ── 메뉴 데이터 (1Depth 메뉴 업데이트) ── */
     const menuData = [
       {
-        id: 'menu-login', label: '로그인',
-        icon: 'login', iconBg: '#dde8f8',
+        id: 'menu-biz', label: '사업접수',
+        icon: 'inbox', iconBg: '#dde8f8',
         children: [
-          { id: 'login-1', label: '로그인' }
+          { id: 'rec-create', label: '신규 프로젝트 생성' },
+          { id: 'rec-status', label: '사업접수현황 조회' }
         ]
       },
       {
-        id: 'menu-rec', label: '접수관리',
-        icon: 'inbox', iconBg: '#dde8f8',
+        id: 'menu-proj', label: '프로젝트 관리',
+        icon: 'layout', iconBg: '#dde8f8',
         children: [
-          { id: 'rec-1', label: '접수현황 및 관리' }
+          { id: 'proj-1', label: '프로젝트 현황' }
         ]
       },
       {
@@ -4041,28 +4047,15 @@
         ]
       },
       {
-        id: 'menu-rep', label: '상환관리',
+        id: 'menu-fund', label: '자금관리',
         icon: 'credit-card', iconBg: '#e3f9ed',
         children: [
-          { id: 'rep-1', label: '상환 스케줄' }
-        ]
-      },
-      {
-        id: 'menu-acc', label: '결산현황',
-        icon: 'wallet', iconBg: '#fff1e0',
-        children: [
+          { id: 'rep-1', label: '상환 스케줄' },
           { id: 'acc-1', label: '월별/연도별 결산' }
         ]
       },
       {
-        id: 'menu-trip', label: '출장관리',
-        icon: 'car', iconBg: '#dde8f8',
-        children: [
-          { id: 'trip-1', label: '출장신청 및 내역' }
-        ]
-      },
-      {
-        id: 'menu-stat-analysis', label: '통계(분석)',
+        id: 'menu-stat-analysis', label: '통계',
         icon: 'bar-chart', iconBg: '#e3f9ed',
         children: [
           { id: 'stat-analysis-1', label: '종합현황' },
@@ -4075,6 +4068,20 @@
         ]
       },
       {
+        id: 'menu-trip', label: '출장관리',
+        icon: 'car', iconBg: '#dde8f8',
+        children: [
+          { id: 'trip-1', label: '출장신청 및 내역' }
+        ]
+      },
+      {
+        id: 'menu-mypage', label: '마이페이지',
+        icon: 'user', iconBg: '#fdecec',
+        children: [
+          { id: 'mypage-1', label: '내 정보' }
+        ]
+      },
+      {
         id: 'menu-common', label: '공통관리',
         icon: 'settings', iconBg: '#f1f5f9',
         children: [
@@ -4083,26 +4090,21 @@
           { id: 'common-3', label: '접속 아이피(IP) 관리' },
           { id: 'common-4', label: '코드관리' },
           { id: 'common-5', label: '로그인 현황' },
-          { id: 'common-6', label: '메뉴별 접속현황' }
-        ]
-      },
-      {
-        id: 'menu-config', label: '환경설정',
-        icon: 'wrench', iconBg: '#fdecec',
-        children: [
-          { id: 'config-1', label: '시스템 설정' }
+          { id: 'common-6', label: '메뉴별 접속현황' },
+          { id: 'common-7', label: '시스템 설정' }
         ]
       }
     ];
 
     const tabData = {
-      'login-1': ['로그인'],
-      'rec-1':    ['접수 목록', '접수 등록'],
-      'dsn-1':    ['설계 목록', '설계 등록'],
-      'con-1':    ['계약 목록', '계약 등록'],
-      'rep-1':    ['상환 스케줄러', '상환 수금등록'],
-      'acc-1':    ['결산 목록', '결산 세부현황'],
-      'trip-1':   ['출장 신청', '출장 정산'],
+      'login-1':   ['로그인'],
+      'rec-create': ['신규 프로젝트 생성'],
+      'rec-status': ['사업접수현황 조회'],
+      'proj-1':    ['프로젝트 목록', '프로젝트 상세'],
+      'con-1':     ['계약 목록', '계약 등록'],
+      'rep-1':     ['상환 스케줄러', '상환 수금등록'],
+      'acc-1':     ['결산 목록', '결산 세부현황'],
+      'trip-1':    ['출장 신청', '출장 정산'],
       'stat-analysis-1': ['종합현황'],
       'stat-analysis-2': ['연도별 추이'],
       'stat-analysis-3': ['부서/분야별 현황'],
@@ -4110,19 +4112,20 @@
       'stat-analysis-5': ['상환/회수 현황'],
       'stat-analysis-6': ['수익율 분석'],
       'stat-analysis-7': ['상환스케쥴 현황'],
-      'common-1': ['관리자 목록', '권한 설정', '이력 조회'],
-      'common-2': ['검색/조회', '권한그룹 추가하기'],
-      'common-3': ['IP 목록', 'IP 등록'],
-      'common-4': ['코드 목록', '코드 등록'],
-      'common-5': ['로그인 현황'],
-      'common-6': ['메뉴별 접속현황'],
-      'config-1': ['시스템 옵션', '코드 관리'],
+      'mypage-1':  ['내 정보'],
+      'common-1':  ['관리자 목록', '권한 설정', '이력 조회'],
+      'common-2':  ['검색/조회', '권한그룹 추가하기'],
+      'common-3':  ['IP 목록', 'IP 등록'],
+      'common-4':  ['코드 목록', '코드 등록'],
+      'common-5':  ['로그인 현황'],
+      'common-6':  ['메뉴별 접속현황'],
+      'common-7':  ['시스템 옵션', '코드 관리'],
     };
 
     function addPrototypeSubMenus() {
       const temporaryLabels = ['A 서브메뉴', 'B 서브메뉴', 'C 서브메뉴'];
       menuData.forEach(parent => {
-        if (parent.id === 'menu-login' || parent.children.length > 1) return;
+        if (parent.children.length > 1) return;
         temporaryLabels.forEach((label, index) => {
           const childId = `${parent.id}-temp-${index + 1}`;
           parent.children.push({ id: childId, label });
@@ -4180,6 +4183,23 @@
       { id: 4, empNo: 'EMP004', username: 'gdhong', name: '홍길동', dept: '에너지사업부', position: '차장', email: 'gdhong@kepcoes.co.kr', status: '중지', regDate: '2026-05-15 09:00:00', regUser: '관리자A', editDate: '2026-05-30 18:22:15', ip: '192.168.10.14', authGroups: ['4'] },
       { id: 5, empNo: 'EMP005', username: 'mkchoi', name: '최미경', dept: '재무관리부', position: '사원', email: 'mkchoi@kepcoes.co.kr', status: '사용', regDate: '2026-06-10 11:30:24', regUser: '이희성', editDate: '2026-06-11 10:05:59', ip: '192.168.10.15', authGroups: ['3', '4'] }
     ];
+
+    // 사업접수 화면용 프로토타입 데이터
+    let projectReceiptList = [
+      { id: 1, receiptNo: 'PRJ-2026-0008', projectName: 'OO산업 공장 에너지효율화 사업', customer: 'OO산업(주)', type: 'ESCO', manager: '김철수', receiptDate: '2026-06-20', status: '접수완료', budget: '1,250,000,000' },
+      { id: 2, receiptNo: 'PRJ-2026-0007', projectName: '공공청사 LED 교체 사업', customer: 'OO시청', type: '시설개선', manager: '박영희', receiptDate: '2026-06-18', status: '검토중', budget: '480,000,000' },
+      { id: 3, receiptNo: 'PRJ-2026-0006', projectName: '태양광 자가소비형 구축 사업', customer: 'OO물류센터', type: '신재생', manager: '이희성', receiptDate: '2026-06-15', status: '승인완료', budget: '920,000,000' },
+      { id: 4, receiptNo: 'PRJ-2026-0005', projectName: '냉난방 설비 고효율화 사업', customer: 'OO대학교', type: 'ESCO', manager: '김철수', receiptDate: '2026-06-11', status: '보완요청', budget: '760,000,000' },
+      { id: 5, receiptNo: 'PRJ-2026-0004', projectName: '스마트 에너지 관리시스템 구축', customer: 'OO병원', type: '시설개선', manager: '박영희', receiptDate: '2026-06-04', status: '접수완료', budget: '315,000,000' }
+    ];
+
+    let projectList = [
+      { id: 1, no: 'PJ-2026-0012', name: 'OO산업 공장 에너지효율화 사업', customer: 'OO산업(주)', type: 'ESCO', manager: '김철수', start: '2026-06-01', end: '2027-05-31', progress: 35, status: '진행중', amount: '1,250,000,000' },
+      { id: 2, no: 'PJ-2026-0011', name: '공공청사 LED 교체 사업', customer: 'OO시청', type: '시설개선', manager: '박영희', start: '2026-05-15', end: '2026-11-30', progress: 62, status: '진행중', amount: '480,000,000' },
+      { id: 3, no: 'PJ-2026-0010', name: '태양광 자가소비형 구축 사업', customer: 'OO물류센터', type: '신재생', manager: '이희성', start: '2026-04-01', end: '2026-09-30', progress: 78, status: '완료예정', amount: '920,000,000' },
+      { id: 4, no: 'PJ-2026-0009', name: '냉난방 설비 고효율화 사업', customer: 'OO대학교', type: 'ESCO', manager: '김철수', start: '2026-06-10', end: '2027-01-31', progress: 10, status: '준비중', amount: '760,000,000' }
+    ];
+    let selectedProjectId = 1;
 
     let currentActiveMenuId = 'common-1';
     let currentActiveTab    = '관리자 목록';
@@ -4618,54 +4638,16 @@
       const contentsArea = document.querySelector('.contents-area');
       if (contentsArea) contentsArea.classList.toggle('login-content', childId === 'login-1');
       
-      // Render sub-page tabs if the menu item has multiple sub-tabs defined in tabData
-      const subTabs = tabData[childId] || [];
-      if (subTabs.length > 1) {
-        const subTabNav = document.createElement('div');
-        subTabNav.className = 'sub-page-tabs';
-        subTabNav.style.display = 'flex';
-        subTabNav.style.gap = '8px';
-        subTabNav.style.marginBottom = '16px';
-        subTabNav.style.borderBottom = '1px solid var(--border)';
-        subTabNav.style.paddingBottom = '8px';
-        
-        subTabs.forEach(st => {
-          const btn = document.createElement('button');
-          btn.textContent = st;
-          btn.style.padding = '6px 16px';
-          btn.style.border = '1px solid var(--border)';
-          btn.style.borderRadius = '20px';
-          btn.style.fontSize = '13px';
-          btn.style.fontWeight = '700';
-          btn.style.cursor = 'pointer';
-          btn.style.transition = 'all 0.15s ease';
-          
-          if (st === tabName) {
-            btn.style.backgroundColor = 'var(--blue)';
-            btn.style.color = '#ffffff';
-            btn.style.borderColor = 'var(--blue)';
-          } else {
-            btn.style.backgroundColor = 'var(--bg2)';
-            btn.style.color = 'var(--text-muted)';
-            btn.style.borderColor = 'var(--border)';
-          }
-          
-          btn.onmouseover = () => {
-            if (st !== tabName) btn.style.backgroundColor = 'var(--blue-lt)';
-          };
-          btn.onmouseout = () => {
-            if (st !== tabName) btn.style.backgroundColor = 'var(--bg2)';
-          };
-          
-          btn.onclick = () => selectMenu(childId, st);
-          subTabNav.appendChild(btn);
-        });
-        
-        contentsContainer.appendChild(subTabNav);
-      }
-
       if (childId === 'login-1') {
         contentsContainer.appendChild(getLoginTemplate());
+      } else if (childId === 'rec-create') {
+        contentsContainer.appendChild(getProjectReceiptCreateTemplate());
+      } else if (childId === 'rec-status') {
+        contentsContainer.appendChild(getProjectReceiptStatusTemplate());
+      } else if (childId === 'proj-1' && tabName === '프로젝트 목록') {
+        contentsContainer.appendChild(getProjectListTemplate());
+      } else if (childId === 'proj-1' && tabName === '프로젝트 상세') {
+        contentsContainer.appendChild(getProjectDetailTemplate());
       } else if (childId === 'common-2' && tabName === '검색/조회') {
         contentsContainer.appendChild(getAuthGroupListTemplate());
       } else if (childId === 'common-2' && tabName === '권한그룹 추가하기') {
@@ -4696,6 +4678,200 @@
         }
         contentsContainer.appendChild(getReadyTemplate(path));
       }
+    }
+
+    /* 프로젝트 관리 - 목록 */
+    function getProjectListTemplate() {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+        <div class="card search-card" style="margin-bottom:16px;">
+          <div class="card-title">검색 조건</div>
+          <div class="form-row">
+            <div class="form-group"><label>프로젝트 기간</label><div style="display:flex; align-items:center; gap:8px;"><input id="project-from" class="form-control" type="date"><span style="color:var(--text-muted);">~</span><input id="project-to" class="form-control" type="date"></div></div>
+            <div class="form-group"><label>진행상태</label><select id="project-status" class="form-control"><option value="전체">전체</option><option>준비중</option><option>진행중</option><option>완료예정</option><option>완료</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>사업구분</label><select id="project-type" class="form-control"><option value="전체">전체</option><option>ESCO</option><option>시설개선</option><option>신재생</option></select></div>
+            <div class="form-group"><label>검색어</label><div style="display:flex; gap:8px;"><select id="project-key" class="form-control" style="width:130px; flex:0 0 auto;"><option value="all">전체</option><option value="name">프로젝트명</option><option value="customer">고객사명</option><option value="manager">담당자</option></select><input id="project-word" class="form-control" placeholder="검색어를 입력하세요."></div></div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:8px; margin-top:18px;"><button class="btn btn-primary" id="project-search">${uiIcon('search')} 검색</button><button class="btn btn-outline" id="project-reset">초기화</button></div>
+        </div>
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;"><div class="card-title" style="margin:0;">프로젝트 목록</div><button class="btn btn-outline" id="project-excel" style="height:32px; padding:0 12px; font-size:13px;">${uiIcon('download')} 다운로드(Excel)</button></div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">전체 <strong id="project-total" style="color:var(--blue);">0</strong>건</div>
+          <div class="table-container"><table class="data-table" style="min-width:2800px;"><thead><tr><th>순번</th><th>프로젝트 계약번호</th><th>등록일</th><th>계약체결일</th><th>사업명</th><th>계약형태</th><th>에너지사용자</th><th>소재지</th><th>진행상태</th><th>총사업금액</th><th>투자금액</th><th>투자적격지</th><th>투자적격률</th><th>공사단계</th><th>준공예정일</th><th>상환완료일</th><th>계약변경 건수</th><th>발주계약 건수</th><th>담당자</th><th>담당부서</th><th>대상설비</th><th>사업구분</th><th>상세</th></tr></thead><tbody id="project-table"></tbody></table></div>
+        </div>`;
+      setTimeout(() => {
+        const statusClass = status => ({ '준비중':'badge-secondary', '진행중':'badge-success', '완료예정':'badge-warning', '완료':'badge-secondary' }[status] || 'badge-secondary');
+        const render = () => {
+          const from=wrapper.querySelector('#project-from').value, to=wrapper.querySelector('#project-to').value, status=wrapper.querySelector('#project-status').value, type=wrapper.querySelector('#project-type').value, key=wrapper.querySelector('#project-key').value, word=wrapper.querySelector('#project-word').value.trim().toLowerCase();
+          const rows=projectList.filter(row => (!from || row.start >= from) && (!to || row.end <= to) && (status === '전체' || row.status === status) && (type === '전체' || row.type === type) && (!word || (key === 'all' ? [row.name,row.customer,row.manager,row.no].join(' ') : row[key]).toLowerCase().includes(word)));
+          wrapper.querySelector('#project-total').textContent=rows.length;
+          wrapper.querySelector('#project-table').innerHTML=rows.length ? rows.map((row,index) => { const stage=row.progress >= 70 ? '준공' : row.progress >= 30 ? '공사중' : '계약품의중'; const eligibility=row.progress >= 30 ? '적격' : '검토중'; return `<tr><td style="text-align:center; color:var(--text-muted);">${index + 1}</td><td>${row.no}</td><td>${row.start}</td><td>${row.start}</td><td style="font-weight:700; white-space:nowrap;">${row.name}</td><td>${row.type}</td><td>${row.customer}</td><td>경기도 안산시</td><td style="text-align:center;"><span class="badge ${statusClass(row.status)}">${row.status}</span></td><td style="text-align:right;">${row.amount}원</td><td style="text-align:right;">${row.amount}원</td><td style="text-align:center;">${eligibility}</td><td style="text-align:center;">100%</td><td style="text-align:center;">${stage}</td><td>${row.end}</td><td>${row.end}</td><td style="text-align:center;">0건</td><td style="text-align:center;">1건</td><td>${row.manager}</td><td>에너지사업부</td><td>고효율 설비</td><td>${row.type}</td><td style="text-align:center;"><button type="button" class="btn btn-outline project-detail" data-id="${row.id}" style="height:26px; padding:0 8px; font-size:12px;">상세보기</button></td></tr>`; }).join('') : '<tr><td colspan="23" style="padding:36px; color:var(--text-muted); text-align:center;">조회된 프로젝트가 없습니다.</td></tr>';
+          wrapper.querySelectorAll('.project-detail').forEach(button => button.onclick=()=>{ selectedProjectId=Number(button.dataset.id); selectMenu('proj-1','프로젝트 상세'); });
+        };
+        wrapper.querySelector('#project-search').onclick=render;
+        wrapper.querySelector('#project-reset').onclick=()=>{ wrapper.querySelectorAll('input').forEach(input=>input.value=''); wrapper.querySelectorAll('select').forEach(select=>select.selectedIndex=0); render(); };
+        wrapper.querySelector('#project-excel').onclick=()=>alert('프로젝트 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.');
+        render();
+      },0);
+      return wrapper;
+    }
+
+    /* 프로젝트 관리 - 상세 */
+    function getProjectDetailTemplate() {
+      const wrapper=document.createElement('div');
+      wrapper.innerHTML=`
+        <div class="card">
+          <div class="card-title">프로젝트 상세</div>
+          <p style="margin-top:-6px; margin-bottom:18px; font-size:13px; color:var(--text-muted);">계약 기본정보와 투자·공사 진행 현황을 확인하고 변경할 수 있습니다.</p>
+          <div style="border-top:1px solid var(--border); padding-top:4px;"><div class="card-title" style="font-size:15px; margin:18px 0 14px;">프로젝트 기본정보</div>
+            <div class="form-row"><div class="form-group"><label>프로젝트명 <span class="required">*</span></label><input id="new-project-name" class="form-control" placeholder="프로젝트명을 입력하세요."></div><div class="form-group"><label>사업구분 <span class="required">*</span></label><select id="new-project-type" class="form-control"><option value="">선택하세요</option><option>ESCO</option><option>시설개선</option><option>신재생</option></select></div></div>
+            <div class="form-row"><div class="form-group"><label>고객사명 <span class="required">*</span></label><input id="new-project-customer" class="form-control" placeholder="고객사명 또는 기관명을 입력하세요."></div><div class="form-group"><label>프로젝트 담당자 <span class="required">*</span></label><select id="new-project-manager" class="form-control"><option value="">선택하세요</option><option>이희성</option><option>김철수</option><option>박영희</option></select></div></div>
+            <div class="form-row"><div class="form-group"><label>프로젝트 기간 <span class="required">*</span></label><div style="display:flex; align-items:center; gap:8px;"><input id="new-project-start" class="form-control" type="date"><span style="color:var(--text-muted);">~</span><input id="new-project-end" class="form-control" type="date"></div></div><div class="form-group"><label>계약금액</label><div style="display:flex; align-items:center; gap:8px;"><input id="new-project-amount" class="form-control" inputmode="numeric" placeholder="숫자만 입력하세요."><span style="color:var(--text-muted);">원</span></div></div></div>
+          </div>
+          <div style="border-top:1px solid var(--border); margin-top:8px; padding-top:4px;"><div class="card-title" style="font-size:15px; margin:18px 0 14px;">추진 계획</div><div class="form-group"><label>프로젝트 추진 내용</label><textarea id="new-project-note" class="form-control" rows="5" style="resize:vertical;" placeholder="주요 추진 일정, 관리 사항 등을 입력하세요."></textarea></div></div>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:24px; padding-top:16px; border-top:1px solid var(--border);"><button type="button" class="btn btn-outline" id="new-project-cancel">목록</button><button type="button" class="btn btn-primary" id="new-project-save">${uiIcon('check')} 저장</button></div>
+        </div>`;
+      setTimeout(()=>{
+        const project = projectList.find(item => item.id === selectedProjectId) || projectList[0];
+        wrapper.querySelector('#new-project-name').value = project.name;
+        wrapper.querySelector('#new-project-type').value = project.type;
+        wrapper.querySelector('#new-project-customer').value = project.customer;
+        wrapper.querySelector('#new-project-manager').value = project.manager;
+        wrapper.querySelector('#new-project-start').value = project.start;
+        wrapper.querySelector('#new-project-end').value = project.end;
+        wrapper.querySelector('#new-project-amount').value = project.amount;
+        wrapper.querySelector('#new-project-note').value = `${project.no} 프로젝트의 계약·공사 진행 현황을 관리합니다.`;
+        wrapper.querySelector('#new-project-amount').addEventListener('input',event=>event.target.value=event.target.value.replace(/[^0-9]/g,'').replace(/\B(?=(\d{3})+(?!\d))/g,','));
+        wrapper.querySelector('#new-project-cancel').onclick=()=>selectMenu('proj-1','프로젝트 목록');
+        wrapper.querySelector('#new-project-save').onclick=()=>{
+          const name=wrapper.querySelector('#new-project-name').value.trim(), type=wrapper.querySelector('#new-project-type').value, customer=wrapper.querySelector('#new-project-customer').value.trim(), manager=wrapper.querySelector('#new-project-manager').value, start=wrapper.querySelector('#new-project-start').value, end=wrapper.querySelector('#new-project-end').value;
+          if(!name||!type||!customer||!manager||!start||!end){alert('필수(*) 항목을 모두 입력해 주세요.');return;}
+          Object.assign(project, { name, customer, type, manager, start, end, amount:wrapper.querySelector('#new-project-amount').value||'0' });
+          alert('프로젝트 정보가 저장되었습니다.'); selectMenu('proj-1','프로젝트 목록');
+        };
+      },0);
+      return wrapper;
+    }
+
+    /* 사업접수 - 신규 프로젝트 생성 */
+    function getProjectReceiptCreateTemplate() {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+        <div class="card" style="margin-bottom:16px;">
+          <div class="card-title">신규 프로젝트 생성</div>
+          <p style="margin-top:-6px; margin-bottom:18px; font-size:13px; color:var(--text-muted);">사업 기본정보와 담당 정보를 입력하여 신규 프로젝트 접수를 등록합니다. <span class="required">*</span> 표시는 필수 입력 항목입니다.</p>
+          <div style="padding-top:4px; border-top:1px solid var(--border);">
+            <div class="card-title" style="font-size:15px; margin:18px 0 14px;">기본 정보</div>
+            <div class="form-row">
+              <div class="form-group"><label>프로젝트명 <span class="required">*</span></label><input id="receipt-project-name" class="form-control" type="text" placeholder="프로젝트명을 입력하세요."></div>
+              <div class="form-group"><label>사업구분 <span class="required">*</span></label><select id="receipt-type" class="form-control"><option value="">선택하세요</option><option>ESCO</option><option>시설개선</option><option>신재생</option><option>기타</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>고객사명 <span class="required">*</span></label><input id="receipt-customer" class="form-control" type="text" placeholder="고객사명 또는 기관명을 입력하세요."></div>
+              <div class="form-group"><label>사업 담당자 <span class="required">*</span></label><select id="receipt-manager" class="form-control"><option value="">선택하세요</option><option>이희성</option><option>김철수</option><option>박영희</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>예상 사업비</label><div style="display:flex; align-items:center; gap:8px;"><input id="receipt-budget" class="form-control" type="text" inputmode="numeric" placeholder="숫자만 입력하세요."><span style="white-space:nowrap; color:var(--text-muted);">원</span></div></div>
+              <div class="form-group"><label>예상 착수일</label><input id="receipt-start-date" class="form-control" type="date"></div>
+            </div>
+          </div>
+          <div style="padding-top:4px; border-top:1px solid var(--border); margin-top:8px;">
+            <div class="card-title" style="font-size:15px; margin:18px 0 14px;">접수 상세</div>
+            <div class="form-row">
+              <div class="form-group"><label>고객 담당자명</label><input id="receipt-contact-name" class="form-control" type="text" placeholder="담당자 성명을 입력하세요."></div>
+              <div class="form-group"><label>연락처</label><input id="receipt-contact-tel" class="form-control" type="tel" placeholder="예: 02-0000-0000"></div>
+            </div>
+            <div class="form-group"><label>사업 개요 및 요청사항</label><textarea id="receipt-description" class="form-control" rows="5" style="resize:vertical;" placeholder="사업 목적, 주요 설비, 요청사항 등을 입력하세요."></textarea></div>
+            <div class="form-group"><label>첨부파일</label><div style="display:flex; align-items:center; gap:10px;"><input id="receipt-file" type="file" style="max-width:360px;"><span style="font-size:12px; color:var(--text-muted);">사업 관련 제안서·현장자료 등을 첨부할 수 있습니다.</span></div></div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
+            <button type="button" class="btn btn-outline" id="receipt-cancel">취소</button>
+            <button type="button" class="btn btn-primary" id="receipt-save">${uiIcon('check')} 프로젝트 생성</button>
+          </div>
+        </div>`;
+
+      setTimeout(() => {
+        wrapper.querySelector('#receipt-budget').addEventListener('input', event => {
+          event.target.value = event.target.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        });
+        wrapper.querySelector('#receipt-cancel').onclick = () => selectMenu('rec-status', '사업접수현황 조회');
+        wrapper.querySelector('#receipt-save').onclick = () => {
+          const projectName = wrapper.querySelector('#receipt-project-name').value.trim();
+          const type = wrapper.querySelector('#receipt-type').value;
+          const customer = wrapper.querySelector('#receipt-customer').value.trim();
+          const manager = wrapper.querySelector('#receipt-manager').value;
+          if (!projectName || !type || !customer || !manager) {
+            alert('필수(*) 항목을 모두 입력해 주세요.');
+            return;
+          }
+          const today = new Date().toISOString().slice(0, 10);
+          projectReceiptList.unshift({
+            id: Date.now(), receiptNo: `PRJ-${today.slice(0, 4)}-${String(projectReceiptList.length + 1).padStart(4, '0')}`,
+            projectName, customer, type, manager, receiptDate: today, status: '접수완료',
+            budget: wrapper.querySelector('#receipt-budget').value || '0'
+          });
+          alert('신규 프로젝트가 접수되었습니다.');
+          selectMenu('rec-status', '사업접수현황 조회');
+        };
+      }, 0);
+      return wrapper;
+    }
+
+    /* 사업접수 - 접수현황 조회 */
+    function getProjectReceiptStatusTemplate() {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+        <div class="card search-card" style="margin-bottom:16px;">
+          <div class="card-title">검색 조건</div>
+          <div class="search-flex" style="display:flex; flex-direction:column; gap:12px;">
+            <div class="form-row">
+              <div class="form-group"><label>접수기간</label><div style="display:flex; align-items:center; gap:8px;"><input id="receipt-search-from" class="form-control" type="date"><span style="color:var(--text-muted);">~</span><input id="receipt-search-to" class="form-control" type="date"></div></div>
+              <div class="form-group"><label>진행상태</label><select id="receipt-search-status" class="form-control"><option value="전체">전체</option><option>접수완료</option><option>검토중</option><option>보완요청</option><option>승인완료</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>사업구분</label><select id="receipt-search-type" class="form-control"><option value="전체">전체</option><option>ESCO</option><option>시설개선</option><option>신재생</option><option>기타</option></select></div>
+              <div class="form-group"><label>검색어</label><div style="display:flex; gap:8px;"><select id="receipt-search-key" class="form-control" style="width:130px; flex:0 0 auto;"><option value="전체">전체</option><option value="projectName">프로젝트명</option><option value="customer">고객사명</option><option value="manager">담당자</option></select><input id="receipt-search-word" class="form-control" type="text" placeholder="검색어를 입력하세요."></div></div>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:center; gap:8px; margin-top:18px;"><button class="btn btn-primary" id="receipt-search">${uiIcon('search')} 검색</button><button class="btn btn-outline" id="receipt-reset">초기화</button></div>
+        </div>
+        <div class="card">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;"><div class="card-title" style="margin:0;">사업접수현황</div><div style="display:flex; gap:8px;"><button class="btn btn-outline" id="receipt-excel" style="height:32px; padding:0 12px; font-size:13px;">${uiIcon('download')} 다운로드(Excel)</button><button class="btn btn-primary" id="receipt-new" style="height:32px; padding:0 12px; font-size:13px;">${uiIcon('plus')} 신규 프로젝트 생성</button></div></div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">전체 <strong id="receipt-total" style="color:var(--blue);">0</strong>건</div>
+          <div class="table-container"><table class="data-table"><thead><tr><th style="width:64px;">No.</th><th>접수번호</th><th>프로젝트명</th><th>고객사</th><th>사업구분</th><th>담당자</th><th>접수일</th><th>진행상태</th><th style="width:88px;">상세</th></tr></thead><tbody id="receipt-table-body"></tbody></table></div>
+          <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;"><div class="pagination" id="receipt-pagination"></div></div>
+        </div>`;
+      setTimeout(() => {
+        let currentPage = 1;
+        const pageSize = 10;
+        const statusClass = status => ({ '접수완료':'badge-success', '검토중':'badge-warning', '보완요청':'badge-danger', '승인완료':'badge-secondary' }[status] || 'badge-secondary');
+        const filteredRows = () => {
+          const from = wrapper.querySelector('#receipt-search-from').value;
+          const to = wrapper.querySelector('#receipt-search-to').value;
+          const status = wrapper.querySelector('#receipt-search-status').value;
+          const type = wrapper.querySelector('#receipt-search-type').value;
+          const key = wrapper.querySelector('#receipt-search-key').value;
+          const word = wrapper.querySelector('#receipt-search-word').value.trim().toLowerCase();
+          return projectReceiptList.filter(row => (!from || row.receiptDate >= from) && (!to || row.receiptDate <= to) && (status === '전체' || row.status === status) && (type === '전체' || row.type === type) && (!word || (key === '전체' ? [row.projectName,row.customer,row.manager,row.receiptNo].join(' ') : row[key]).toLowerCase().includes(word)));
+        };
+        const render = () => {
+          const rows = filteredRows(); const totalPages = Math.max(1, Math.ceil(rows.length / pageSize)); currentPage = Math.min(currentPage, totalPages);
+          const start = (currentPage - 1) * pageSize; const visible = rows.slice(start, start + pageSize);
+          wrapper.querySelector('#receipt-total').textContent = rows.length;
+          wrapper.querySelector('#receipt-table-body').innerHTML = visible.length ? visible.map((row, index) => `<tr><td style="text-align:center; color:var(--text-muted);">${start + index + 1}</td><td>${row.receiptNo}</td><td style="font-weight:700;">${row.projectName}</td><td>${row.customer}</td><td>${row.type}</td><td>${row.manager}</td><td>${row.receiptDate}</td><td style="text-align:center;"><span class="badge ${statusClass(row.status)}">${row.status}</span></td><td style="text-align:center;"><button type="button" class="btn btn-outline receipt-detail" data-id="${row.id}" style="height:26px; padding:0 8px; font-size:12px;">상세보기</button></td></tr>`).join('') : '<tr><td colspan="9" style="padding:36px; color:var(--text-muted); text-align:center;">조회된 사업접수 내역이 없습니다.</td></tr>';
+          wrapper.querySelector('#receipt-pagination').innerHTML = Array.from({length: totalPages}, (_, i) => `<button class="page-btn ${i + 1 === currentPage ? 'active' : ''}" data-page="${i + 1}">${i + 1}</button>`).join('');
+          wrapper.querySelectorAll('.page-btn').forEach(button => button.onclick = () => { currentPage = Number(button.dataset.page); render(); });
+          wrapper.querySelectorAll('.receipt-detail').forEach(button => button.onclick = () => { const row = projectReceiptList.find(item => item.id === Number(button.dataset.id)); alert(`${row.projectName}\n접수번호: ${row.receiptNo}\n고객사: ${row.customer}\n진행상태: ${row.status}`); });
+        };
+        wrapper.querySelector('#receipt-search').onclick = () => { currentPage = 1; render(); };
+        wrapper.querySelector('#receipt-reset').onclick = () => { wrapper.querySelectorAll('input').forEach(input => input.value = ''); wrapper.querySelectorAll('select').forEach(select => select.selectedIndex = 0); currentPage = 1; render(); };
+        wrapper.querySelector('#receipt-new').onclick = () => selectMenu('rec-create', '신규 프로젝트 생성');
+        wrapper.querySelector('#receipt-excel').onclick = () => alert('사업접수현황 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.');
+        render();
+      }, 0);
+      return wrapper;
     }
 
     /* 관리자 목록 템플릿 */
