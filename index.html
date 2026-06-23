@@ -2691,10 +2691,12 @@
       display: none;
     }
     .mega-item {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 7px;
       min-height: auto;
       width: 100%;
-      padding: 7px 4px;
+      padding: 7px 6px;
       border: 0;
       border-radius: 0;
       background: transparent;
@@ -2702,13 +2704,19 @@
       font-size: 14px;
       font-weight: 500;
       line-height: 1.4;
-      text-align: center;
+      text-align: left;
       cursor: pointer;
       position: relative;
       transition: color 0.15s;
     }
     .mega-item::before {
-      display: none;
+      content: '';
+      width: 4px;
+      height: 4px;
+      flex: 0 0 4px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.7;
     }
     .mega-item:hover {
       background: transparent;
@@ -2721,7 +2729,7 @@
       font-weight: 800;
       box-shadow: none;
     }
-    .mega-item.active::before { display: none; }
+    .mega-item.active::before { display: block; }
     /* .menu-2depth-item — 개별 드롭다운 비활성화(display:none), 스타일 유지 */
     .menu-2depth-item {
       display: none;
