@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>화면설계 프로토타입 - 프로그램 시작</title>
+    <!-- Google Fonts: Pretentard or Inter/Outfit for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-primary: #818cf8;
+            --accent-secondary: #c084fc;
+            --accent-glow: rgba(129, 140, 248, 0.3);
+            --success: #34d399;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient background glow dots */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.4;
+        }
+
+        body::before {
+            background: var(--accent-primary);
+            top: 10%;
+            left: 10%;
+        }
+
+        body::after {
+            background: var(--accent-secondary);
+            bottom: 10%;
+            right: 10%;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 580px;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px var(--accent-glow);
+            position: relative;
+        }
+
+        .logo-container svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #ffffff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.2);
+            color: var(--success);
+            padding: 6px 16px;
+            border-radius: 99px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--success);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.6; }
+        }
+
+        .url-box {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            text-align: left;
+        }
+
+        .url-text {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: var(--accent-primary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            user-select: all;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: var(--text-primary);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .copy-btn.copied {
+            background: var(--success);
+            color: #0f172a;
+        }
+
+        .action-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+            border: none;
+            color: white;
+            padding: 18px;
+            border-radius: 14px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(129, 140, 248, 0.2);
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(129, 140, 248, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .countdown {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .countdown span {
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="card">
+            <!-- App Icon (Screen / Monitor) -->
+            <div class="logo-container">
+                <svg viewBox="0 0 24 24">
+                    <path d="M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7l-2 3v1h8v-1l-2-3h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z"/>
+                </svg>
+            </div>
+
+            <h1>화면설계 프로토타입</h1>
+            <p class="subtitle">화면설계 프로토타입 브라우저 실행 안내</p>
+
+            <div class="status-badge">
+                <div class="status-dot"></div>
+                GitHub Pages 배포 및 준비 완료
+            </div>
+
+            <div class="url-box">
+                <span class="url-text" id="urlText">https://leehee4343.github.io/20260620_screen_design_prototype/</span>
+                <button class="copy-btn" id="copyBtn" onclick="copyUrl()">URL 복사</button>
+            </div>
+
+            <a href="https://leehee4343.github.io/20260620_screen_design_prototype/" class="action-btn" id="startBtn">
+                프로토타입 시작하기
+            </a>
+
+            <div class="countdown" id="countdownText">
+                <span id="seconds">5</span>초 후에 실시간 공유 URL로 자동으로 이동합니다.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const targetUrl = "https://leehee4343.github.io/20260620_screen_design_prototype/";
+        let timeLeft = 5;
+        const secondsSpan = document.getElementById('seconds');
+        
+        // Auto redirect timer
+        const timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                window.location.href = targetUrl;
+            } else {
+                secondsSpan.textContent = timeLeft;
+            }
+        }, 1000);
+
+        // Copy to clipboard function
+        function copyUrl() {
+            const urlText = document.getElementById('urlText').innerText;
+            navigator.clipboard.writeText(urlText).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.innerText = "복사 완료!";
+                copyBtn.classList.add('copied');
+                
+                setTimeout(() => {
+                    copyBtn.innerText = "URL 복사";
+                    copyBtn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('URL 복사 실패: ', err);
+            });
+        }
+    </script>
+</body>
+</html>
