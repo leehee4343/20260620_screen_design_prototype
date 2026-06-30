@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -4123,13 +4123,13 @@
       'stat-analysis-6': ['수익율 분석'],
       'stat-analysis-7': ['상환스케쥴 현황'],
       'mypage-1':  ['내 정보'],
-      'common-1':  ['관리자 목록', '권한 설정', '이력 조회'],
+      'common-1':  ['관리자 목록'],
       'common-2':  ['검색/조회', '권한그룹 추가하기'],
-      'common-3':  ['IP 목록', 'IP 등록'],
-      'common-4':  ['코드 목록', '코드 등록'],
+      'common-3':  ['IP 목록'],
+      'common-4':  ['코드 목록'],
       'common-5':  ['로그인 현황'],
       'common-6':  ['메뉴별 접속현황'],
-      'common-7':  ['협력업체 목록', '협력업체 등록'],
+      'common-7':  ['협력업체 목록', '협력업체 상세'],
       'common-8':  ['공지사항 목록', '공지사항 등록'],
       'common-9':  ['자료실 목록', '자료 등록'],
     };
@@ -4212,6 +4212,47 @@
       { id: 4, no: 'PJ-2026-0009', name: '냉난방 설비 고효율화 사업', customer: 'OO대학교', type: 'ESCO', manager: '김철수', start: '2026-06-10', end: '2027-01-31', progress: 10, status: '준비중', amount: '760,000,000' }
     ];
     let selectedProjectId = 1;
+
+    // ── 협력업체 Mock 데이터 ──
+    let partnerList = [
+      { id:1, code:'02663', name:'큐비트엑스', bizNo:'349-83-01795', ceo:'이홍태, 윤지병', manager:'이희성', managerEmail:'leehee43@naver.com', managerTel:'010-6844-2810', status:'정상', regDate:'2026. 06. 09', regUser:'이희성', editDate:'2026.06.10(이희성)', address:'서울특별시 송파구 중대로 113(대한전기협회 9층)', creditGrade:'AA', debtRatio:'45.2%', sales1:'120억', sales2:'98억', sales3:'85억', constExp:'230억', workers:15, guarantee:'없음', creditISO:'없음', guaranteeType:'이행보증금', guaranteeDetail:'지급보증보험 100%', location:'서울특별시', locationDetail:'송파구', energyManager:'홍길동', contact:'010-1234-5678' },
+      { id:2, code:'01234', name:'한솔에너지솔루션', bizNo:'123-45-67890', ceo:'김한솔', manager:'박철수', managerEmail:'park@hansol.co.kr', managerTel:'010-2345-6789', status:'정상', regDate:'2026. 06. 10', regUser:'이희성', editDate:'2026.06.11(이희성)', address:'경기도 안산시 단원구 원포공원1로 70', creditGrade:'A+', debtRatio:'62.1%', sales1:'85억', sales2:'71억', sales3:'65억', constExp:'185억', workers:12, guarantee:'있음', creditISO:'있음', guaranteeType:'공공기관', guaranteeDetail:'이행보증보험 100%', location:'경기도', locationDetail:'안산시', energyManager:'이관리', contact:'010-5678-9012' },
+      { id:3, code:'03456', name:'그린텍솔루션', bizNo:'234-56-78901', ceo:'최그린', manager:'이무관', managerEmail:'mgr@greentech.co.kr', managerTel:'010-3456-7890', status:'중지', regDate:'2026. 06. 12', regUser:'이희성', editDate:'', address:'서울특별시 강남구 테헤란로 123', creditGrade:'BBB', debtRatio:'88.5%', sales1:'42억', sales2:'38억', sales3:'45억', constExp:'95억', workers:8, guarantee:'없음', creditISO:'없음', guaranteeType:'기타', guaranteeDetail:'', location:'서울특별시', locationDetail:'강남구', energyManager:'김에너지', contact:'010-3456-7890' },
+      { id:4, code:'04567', name:'스마트에너지텍', bizNo:'345-67-89012', ceo:'홍스마트', manager:'김담당', managerEmail:'kim@smartenergy.co.kr', managerTel:'010-4567-8901', status:'정상', regDate:'2026. 06. 13', regUser:'박영희', editDate:'2026.06.15(박영희)', address:'부산광역시 해운대구 센텀중앙로 55', creditGrade:'A', debtRatio:'55.0%', sales1:'67억', sales2:'59억', sales3:'51억', constExp:'143억', workers:10, guarantee:'없음', creditISO:'있음', guaranteeType:'이행보증금', guaranteeDetail:'이행보증보험 100%', location:'부산광역시', locationDetail:'해운대구', energyManager:'신에너지', contact:'010-6789-0123' },
+      { id:5, code:'05678', name:'에코파워시스템', bizNo:'456-78-90123', ceo:'박에코', manager:'최파워', managerEmail:'choi@ecopower.co.kr', managerTel:'010-5678-9012', status:'폐업', regDate:'2026. 06. 01', regUser:'이희성', editDate:'2026.06.20(이희성)', address:'대전광역시 유성구 과학로 125', creditGrade:'C', debtRatio:'145.2%', sales1:'18억', sales2:'22억', sales3:'31억', constExp:'52억', workers:4, guarantee:'없음', creditISO:'없음', guaranteeType:'기타', guaranteeDetail:'', location:'대전광역시', locationDetail:'유성구', energyManager:'오담당', contact:'010-7890-1234' }
+    ];
+    for (let i = 6; i <= 55; i++) {
+      partnerList.push({
+        id:i, code:String(10000+i).slice(1), name:`에너지파트너스_${i}`, bizNo:`${100+i}-${10+i}-${10000+i}`, ceo:`대표자${i}`, manager:`담당자${i}`, managerEmail:`manager${i}@corp.co.kr`, managerTel:`010-${1000+i}-${2000+i}`,
+        status:i%7===0?'폐업':i%5===0?'중지':'정상', regDate:'2026. 06. 15', regUser:'이희성', editDate:'',
+        address:`서울특별시 강남구 테헤란로 ${i*10}`, creditGrade:['AA','A+','A','BBB'][i%4], debtRatio:`${(30+i).toFixed(1)}%`,
+        sales1:`${50+i}억`, sales2:`${45+i}억`, sales3:`${40+i}억`, constExp:`${100+i*2}억`, workers:5+i%10,
+        guarantee:i%2===0?'있음':'없음', creditISO:i%3===0?'있음':'없음', guaranteeType:'이행보증금', guaranteeDetail:'', location:'서울특별시', locationDetail:'강남구', energyManager:`에너지담당${i}`, contact:`010-${3000+i}-${4000+i}`
+      });
+    }
+    let selectedPartnerId = 1;
+
+    // ── 공지사항 Mock 데이터 ──
+    let noticeList = [
+      { id:1, target:'전체', pinned:'Y', title:"'협력업체 선정 세부기준'이 개정되었습니다.", period:'무관', author:'이희성', regDate:'2026.06.30', postStatus:'게시', views:10235, content:"협력업체 선정 세부기준이 2026년 7월 1일부터 개정 적용됩니다.\n\n주요 변경 내용:\n1. 신용등급 평가 기준 강화 (A- 이상 → A 이상)\n2. 시공경험 3년 누계 기준 상향 (100억 → 150억)\n3. 부채비율 기준 조정 (200% 이하 → 150% 이하)\n\n기존 협력업체는 3개월 유예기간 이후 재평가 예정입니다.", files:['협력업체선정기준_개정안.PDF','개정전후비교표.HWP'] },
+      { id:2, target:'내부', pinned:'Y', title:'2026년 하반기 업무 지침 안내', period:'2026.07.01~2026.07.31', author:'이희성', regDate:'2026.06.25', postStatus:'미게시', views:0, content:'', files:[] },
+      { id:3, target:'외부', pinned:'N', title:'협력업체 계약 양식 변경 안내', period:'무관', author:'박영희', regDate:'2026.06.20', postStatus:'게시', views:3841, content:'', files:['계약양식_변경안내.PDF'] },
+      { id:4, target:'전체', pinned:'N', title:'시스템 정기 점검 안내 (2026.07.05)', period:'2026.07.04~2026.07.06', author:'이희성', regDate:'2026.06.15', postStatus:'게시', views:1234, content:'', files:[] },
+      { id:5, target:'내부', pinned:'N', title:'2026년 상반기 실적 보고 양식 배포', period:'무관', author:'김철수', regDate:'2026.06.10', postStatus:'미게시', views:0, content:'', files:[] }
+    ];
+    let selectedNoticeId = 1;
+    let noticeEditMode = false;
+
+    // ── 자료실 Mock 데이터 ──
+    let resourceList = [
+      { id:1, target:'전체', pinned:'Y', title:'HW_물품계약서', period:'무관', author:'이희성', regDate:'2026.06.30', postStatus:'게시', views:10235, content:'', files:['HW_물품계약서.HWP','작성가이드.PDF'] },
+      { id:2, target:'내부', pinned:'Y', title:'ESCO 사업 표준계약서 (2026년판)', period:'무관', author:'이희성', regDate:'2026.06.25', postStatus:'미게시', views:0, content:'', files:[] },
+      { id:3, target:'외부', pinned:'N', title:'공사대금 정산 신청서 양식', period:'무관', author:'박영희', regDate:'2026.06.20', postStatus:'게시', views:5621, content:'', files:['정산신청서.HWP'] },
+      { id:4, target:'전체', pinned:'N', title:'에너지 진단 보고서 작성 지침', period:'무관', author:'이희성', regDate:'2026.06.15', postStatus:'게시', views:2890, content:'', files:['진단보고서작성지침.PDF'] },
+      { id:5, target:'내부', pinned:'N', title:'2026 업무 매뉴얼 (내부직원용)', period:'무관', author:'김철수', regDate:'2026.06.10', postStatus:'미게시', views:0, content:'', files:[] }
+    ];
+    let selectedResourceId = 1;
+    let resourceEditMode = false;
 
     let currentActiveMenuId = 'common-1';
     let currentActiveTab    = '관리자 목록';
@@ -4660,26 +4701,32 @@
         contentsContainer.appendChild(getProjectListTemplate());
       } else if (childId === 'proj-1' && tabName === '프로젝트 상세') {
         contentsContainer.appendChild(getProjectDetailTemplate());
+      } else if (childId === 'common-1' && tabName === '관리자 목록') {
+        contentsContainer.appendChild(getAdminListTemplate());
       } else if (childId === 'common-2' && tabName === '검색/조회') {
         contentsContainer.appendChild(getAuthGroupListTemplate());
       } else if (childId === 'common-2' && tabName === '권한그룹 추가하기') {
         contentsContainer.appendChild(getAuthGroupSettingTemplate());
-      } else if (childId === 'common-1' && tabName === '관리자 목록') {
-        contentsContainer.appendChild(getAdminListTemplate());
-      } else if (childId === 'common-1' && tabName === '관리자 등록') {
-        contentsContainer.appendChild(getAdminRegisterTemplate());
       } else if (childId === 'common-3' && tabName === 'IP 목록') {
         contentsContainer.appendChild(getAccessIpListTemplate());
-      } else if (childId === 'common-3' && tabName === 'IP 등록') {
-        contentsContainer.appendChild(getAccessIpRegisterTemplate());
       } else if (childId === 'common-4' && tabName === '코드 목록') {
         contentsContainer.appendChild(getCodeListTemplate());
-      } else if (childId === 'common-4' && tabName === '코드 등록') {
-        contentsContainer.appendChild(getCodeRegisterTemplate());
       } else if (childId === 'common-5' && tabName === '로그인 현황') {
         contentsContainer.appendChild(getLoginStatusTemplate());
       } else if (childId === 'common-6' && tabName === '메뉴별 접속현황') {
         contentsContainer.appendChild(getMenuAccessStatusTemplate());
+      } else if (childId === 'common-7' && tabName === '협력업체 목록') {
+        contentsContainer.appendChild(getPartnerListTemplate());
+      } else if (childId === 'common-7' && tabName === '협력업체 상세') {
+        contentsContainer.appendChild(getPartnerDetailTemplate());
+      } else if (childId === 'common-8' && tabName === '공지사항 목록') {
+        contentsContainer.appendChild(getNoticeListTemplate());
+      } else if (childId === 'common-8' && tabName === '공지사항 등록') {
+        contentsContainer.appendChild(getNoticeRegisterTemplate());
+      } else if (childId === 'common-9' && tabName === '자료실 목록') {
+        contentsContainer.appendChild(getResourceListTemplate());
+      } else if (childId === 'common-9' && tabName === '자료 등록') {
+        contentsContainer.appendChild(getResourceRegisterTemplate());
       } else if (childId.startsWith('stat-analysis-')) {
         contentsContainer.appendChild(getStatAnalysisTemplate(childId));
       } else {
@@ -5155,111 +5202,6 @@
 
         // Initial table load
         updateTable();
-      }, 50);
-
-      return wrapper;
-    }
-
-    /* 관리자 등록 템플릿 */
-    function getAdminRegisterTemplate() {
-      const wrapper = document.createElement('div');
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="card-title">관리자 등록</div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>사원번호 <span class="required">*</span></label>
-            <input type="text" class="form-control" id="reg-empno" placeholder="예: EMP006">
-          </div>
-          <div class="form-group">
-            <label>사원명 <span class="required">*</span></label>
-            <input type="text" class="form-control" id="reg-name" placeholder="성명 입력">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>부서 <span class="required">*</span></label>
-            <input type="text" class="form-control" id="reg-dept" placeholder="예: 에너지기획부">
-          </div>
-          <div class="form-group">
-            <label>직급 <span class="required">*</span></label>
-            <input type="text" class="form-control" id="reg-position" placeholder="예: 대리">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>아이디 <span class="required">*</span></label>
-            <input type="text" class="form-control" id="reg-username" placeholder="영문+숫자 조합">
-          </div>
-          <div class="form-group">
-            <label>초기 비밀번호 <span class="required">*</span></label>
-            <input type="password" class="form-control" id="reg-pw" placeholder="8자 이상, 영문+숫자+특수문자">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>이메일 <span class="required">*</span></label>
-            <input type="email" class="form-control" id="reg-email" placeholder="example@kepcoes.co.kr">
-          </div>
-          <div class="form-group">
-            <label>사용 여부</label>
-            <div class="radio-group">
-              <label class="radio-item"><input type="radio" name="reg-status" value="사용" checked> 사용</label>
-              <label class="radio-item"><input type="radio" name="reg-status" value="중지"> 중지</label>
-            </div>
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:8px;">
-          <button class="btn btn-primary" id="btn-save">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            저장
-          </button>
-          <button class="btn btn-outline" id="btn-cancel">취소</button>
-        </div>`;
-      wrapper.appendChild(card);
-
-      setTimeout(() => {
-        wrapper.querySelector('#btn-save').onclick = () => {
-          const empNo = wrapper.querySelector('#reg-empno').value.trim();
-          const name  = wrapper.querySelector('#reg-name').value.trim();
-          const dept  = wrapper.querySelector('#reg-dept').value.trim();
-          const pos   = wrapper.querySelector('#reg-position').value.trim();
-          const uname = wrapper.querySelector('#reg-username').value.trim();
-          const email = wrapper.querySelector('#reg-email').value.trim();
-          const pw    = wrapper.querySelector('#reg-pw').value.trim();
-          const status = wrapper.querySelector('input[name="reg-status"]:checked').value;
-
-          if (!empNo || !name || !dept || !pos || !uname || !email || !pw) {
-            alert('필수(*) 항목을 모두 입력해 주세요.');
-            return;
-          }
-
-          // Format current date as YYYY-MM-DD
-          const todayStr = new Date().toISOString().substring(0, 10);
-
-          adminList.unshift({
-            id: adminList.length + 1,
-            empNo: empNo,
-            username: uname,
-            name: name,
-            dept: dept,
-            position: pos,
-            email: email,
-            status: status,
-            regDate: todayStr,
-            regUser: '이희성',
-            editDate: todayStr
-          });
-
-          alert(`관리자 '${name}'이(가) 등록되었습니다.`);
-          selectMenu('common-1', '관리자 목록');
-        };
-        wrapper.querySelector('#btn-cancel').onclick = () => {
-          if (confirm('작성 중인 내용이 저장되지 않습니다. 취소하시겠습니까?')) {
-            selectMenu('common-1', '관리자 목록');
-          }
-        };
       }, 50);
 
       return wrapper;
@@ -7027,50 +6969,6 @@
       return wrapper;
     }
 
-    function getAccessIpRegisterTemplate() {
-      const wrapper = document.createElement('div');
-      wrapper.innerHTML = `
-        <div class="card">
-          <div class="card-title">접속 아이피(IP) 등록</div>
-          <div style="display:flex; flex-direction:column; gap:16px;">
-            <div class="form-group">
-              <label>아이피(IP) <span class="required">*</span></label>
-              <input type="text" id="ip-reg-address" class="form-control" placeholder="예) 211.215.111.2" style="max-width:400px;">
-            </div>
-            <div class="form-group">
-              <label>아이피(IP) 추가 사유 <span class="required">*</span></label>
-              <input type="text" id="ip-reg-reason" class="form-control" placeholder="100자 이내로 간략히 작성해주세요.">
-            </div>
-          </div>
-          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
-            <button class="btn btn-primary" onclick="submitIpRegTab()" style="background-color: var(--blue);">접속 아이피(IP) 추가하기</button>
-            <button class="btn btn-outline" onclick="selectMenu('common-3', 'IP 목록')">취소</button>
-          </div>
-        </div>`;
-      
-      window.submitIpRegTab = () => {
-        const ip = document.getElementById('ip-reg-address').value.trim();
-        const reason = document.getElementById('ip-reg-reason').value.trim();
-        if(!ip || !reason) {
-          alert('필수(*) 항목을 입력해주세요.');
-          return;
-        }
-        const today = new Date();
-        const fmt = `${today.getFullYear()}. ${String(today.getMonth()+1).padStart(2,'0')}. ${String(today.getDate()).padStart(2,'0')}`;
-        accessIpList.unshift({
-          id: accessIpList.length + 1,
-          ip: ip,
-          reason: reason,
-          regDate: fmt,
-          regUser: '이희성'
-        });
-        alert('정상적으로 등록되었습니다.');
-        selectMenu('common-3', 'IP 목록');
-      };
-
-      return wrapper;
-    }
-
     window.openIpAddModal = () => {
       document.getElementById('ip-add-address').value = '';
       document.getElementById('ip-add-reason').value = '';
@@ -7103,547 +7001,286 @@
     };
 
 
-    /* ── 코드 관리 템플릿 ── */
-    let codePageSize = 10;
-    let codeCurrentPage = 1;
-    let activeEditCodeId = null;
-
+    /* ── 코드 관리 템플릿 (3컬럼) ── */
     function getCodeListTemplate() {
       const wrapper = document.createElement('div');
 
-      const searchCard = document.createElement('div');
-      searchCard.className = 'card search-card';
-      searchCard.innerHTML = `
-        <div class="card-title">검색 조건</div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
-            <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">조회기간 (등록일)</label>
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-              <div class="date-presets" style="display:flex; gap:4px; margin-right:4px;">
-                <button type="button" class="date-preset-btn" data-preset="1d">하루 전</button>
-                <button type="button" class="date-preset-btn" data-preset="1w">1주일</button>
-                <button type="button" class="date-preset-btn" data-preset="1m">1개월</button>
-                <button type="button" class="date-preset-btn" data-preset="3m">3개월</button>
-                <button type="button" class="date-preset-btn" data-preset="6m">6개월</button>
-                <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
-              </div>
-              <input type="date" id="code-search-start-date" class="form-control" style="width:150px;">
-              <span style="color:var(--text-muted);">~</span>
-              <input type="date" id="code-search-end-date" class="form-control" style="width:150px;">
-            </div>
-          </div>
-          <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
-            <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">사용여부</label>
-            <div class="radio-group" style="display:flex; gap:16px; height:38px; align-items:center;">
-              <label class="radio-item"><input type="radio" name="code-search-status" value="전체" checked> 전체</label>
-              <label class="radio-item"><input type="radio" name="code-search-status" value="사용(Y)"> 사용(Y)</label>
-              <label class="radio-item"><input type="radio" name="code-search-status" value="중지(N)"> 중지(N)</label>
-            </div>
-          </div>
-          <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
-            <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">키워드 검색</label>
-            <div style="display:flex; gap:8px; width:500px; max-width:100%;">
-              <select id="code-search-key" class="form-control" style="width:130px; flex-shrink:0;">
-                <option value="전체">전체</option>
-                <option value="코드">코드</option>
-                <option value="코드(논리명)">코드(논리명)</option>
-                <option value="코드설명">코드설명</option>
-              </select>
-              <input type="text" id="code-search-keyword" class="form-control" style="flex:1;" placeholder="검색어를 입력하세요.">
-            </div>
-          </div>
-        </div>
-        <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px; border-top:1px solid var(--border); padding-top:16px;">
-          <button class="btn btn-primary" id="btn-code-search">
-            ${uiIcon('search')} 검색
-          </button>
-          <button class="btn btn-outline" id="btn-code-reset">초기화</button>
-        </div>`;
-      wrapper.appendChild(searchCard);
-
-      const listCard = document.createElement('div');
-      listCard.className = 'card';
-      listCard.innerHTML = `
-        <div class="card-title">코드 목록</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-          <div style="font-size:13px; color:var(--text-muted);">
-            전체 <strong id="code-total-cnt" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp; 
-            현재 <strong id="code-current-page" style="color:var(--text);">1/1</strong> 페이지
-          </div>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <select id="select-code-page-size" class="form-control" style="width:110px; height:32px; font-size:13px; padding:0 8px; margin:0;">
-              <option value="10">10개씩</option>
-              <option value="20">20개씩</option>
-              <option value="50">50개씩</option>
-            </select>
-            <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="downloadCodeExcel()">
-              ${uiIcon('download')} 다운로드(Excel)
-            </button>
-            <button class="btn btn-primary" onclick="openCodeAddTab()" style="height:32px; padding:0 14px; font-size:13px; background-color: var(--blue);">
-              코드 추가하기
-            </button>
-          </div>
-        </div>
-        <div class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th style="width:70px; text-align:center;">No</th>
-                <th>코드</th>
-                <th>코드(논리명)</th>
-                <th>코드설명</th>
-                <th style="width:90px; text-align:center;">사용여부</th>
-                <th style="width:85px; text-align:center;">값(개수)</th>
-                <th>등록일</th>
-                <th>등록자</th>
-                <th style="width:85px; text-align:center;">관리</th>
-                <th>최종수정</th>
-              </tr>
-            </thead>
-            <tbody id="code-table-body"></tbody>
-          </table>
-        </div>
-        <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;">
-          <div></div>
-          <div class="pagination" id="code-pagination"></div>
-          <div></div>
-        </div>`;
-      wrapper.appendChild(listCard);
-
-      setTimeout(() => {
-        const updateTable = () => {
-          const startDate = wrapper.querySelector('#code-search-start-date').value;
-          const endDate = wrapper.querySelector('#code-search-end-date').value;
-          const useStatus = wrapper.querySelector('input[name="code-search-status"]:checked').value;
-          const key = wrapper.querySelector('#code-search-key').value;
-          const keyword = wrapper.querySelector('#code-search-keyword').value.toLowerCase().trim();
-
-          const filtered = codeList.filter(item => {
-            if (startDate && item.regDate.replace(/\./g, '-').trim() < startDate) return false;
-            if (endDate && item.regDate.replace(/\./g, '-').trim() > endDate) return false;
-            if (useStatus !== '전체' && item.useStatus !== useStatus) return false;
-
-            if (keyword) {
-              if (key === '전체') {
-                return (item.code.toLowerCase().includes(keyword) || item.codeName.toLowerCase().includes(keyword) || item.codeDesc.toLowerCase().includes(keyword));
-              } else if (key === '코드') {
-                return item.code.toLowerCase().includes(keyword);
-              } else if (key === '코드(논리명)') {
-                return item.codeName.toLowerCase().includes(keyword);
-              } else if (key === '코드설명') {
-                return item.codeDesc.toLowerCase().includes(keyword);
-              }
-            }
-            return true;
-          });
-
-          const totalCount = filtered.length;
-          const totalPages = Math.ceil(totalCount / codePageSize) || 1;
-          if (codeCurrentPage > totalPages) codeCurrentPage = totalPages;
-
-          const startIdx = (codeCurrentPage - 1) * codePageSize;
-          const paginated = filtered.slice(startIdx, startIdx + codePageSize);
-
-          const tbody = wrapper.querySelector('#code-table-body');
-          tbody.innerHTML = paginated.map((item, idx) => {
-            const statusClass = item.useStatus === '사용(Y)' ? 'badge-success' : 'badge-danger';
-            return `<tr>
-              <td style="color:var(--text-muted); text-align:center;">${25214 + startIdx + idx}</td>
-              <td style="font-weight:700; color:var(--blue-dk);">${item.code}</td>
-              <td>${item.codeName}</td>
-              <td style="text-align:left;">${item.codeDesc}</td>
-              <td style="text-align:center;"><span class="badge ${statusClass}">${item.useStatus}</span></td>
-              <td style="text-align:center; font-weight:700; color:var(--blue);">${item.values.length}개</td>
-              <td style="color:var(--text-muted);">${dateOnly(item.regDate)}</td>
-              <td>${item.regUser}</td>
-              <td style="text-align:center;">
-                <button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:13px;"
-                  onclick="openCodeEditTab(${item.id})">관리</button>
-              </td>
-              <td style="color:var(--text-muted);">${dateOnly(item.editDate) || '—'}</td>
-            </tr>`;
-          }).join('');
-
-          wrapper.querySelector('#code-total-cnt').textContent = totalCount;
-          wrapper.querySelector('#code-current-page').textContent = `${codeCurrentPage}/${totalPages}`;
-
-          const paginationContainer = wrapper.querySelector('#code-pagination');
-          let pagHTML = `<button class="page-btn" onclick="goToCodePage(1)">&laquo;</button>`;
-          for (let i = 1; i <= totalPages; i++) {
-            pagHTML += `<button class="page-btn ${i === codeCurrentPage ? 'active' : ''}" onclick="goToCodePage(${i})">${i}</button>`;
-          }
-          pagHTML += `<button class="page-btn" onclick="goToCodePage(${totalPages})">&raquo;</button>`;
-          paginationContainer.innerHTML = pagHTML;
-        };
-
-        window.goToCodePage = (page) => {
-          codeCurrentPage = page;
-          updateTable();
-        };
-
-        window.openCodeAddTab = () => {
-          activeEditCodeId = null;
-          selectMenu('common-4', '코드 등록');
-        };
-
-        window.openCodeEditTab = (id) => {
-          activeEditCodeId = id;
-          selectMenu('common-4', '코드 등록');
-        };
-
-        window.downloadCodeExcel = () => {
-          const lines = codeList.map(item => {
-            const valListStr = item.values.map(v => `${v.valName}(${v.valCode})`).join(', ');
-            return `코드: ${item.code}, 논리명: ${item.codeName}, 설명: ${item.codeDesc}, 사용여부: ${item.useStatus}, 값 목록: [${valListStr}]`;
-          });
-          alert("해당 목록의 모든 정보 + 값(하나의 컬럼에 ','로 구분)이 포함된 엑셀 파일이 다운로드되었습니다.\n\n" + lines.slice(0, 3).join("\n") + "\n...");
-        };
-
-        const presetBtns = wrapper.querySelectorAll('.date-preset-btn');
-        const startInput = wrapper.querySelector('#code-search-start-date');
-        const endInput = wrapper.querySelector('#code-search-end-date');
-        const clearPresets = () => presetBtns.forEach(b => b.classList.remove('active'));
-        startInput.onchange = clearPresets;
-        endInput.onchange = clearPresets;
-
-        presetBtns.forEach(btn => {
-          btn.onclick = () => {
-            presetBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const preset = btn.getAttribute('data-preset');
-            const endDate = new Date();
-            let startDate = new Date();
-
-            if (preset === '1d') startDate.setDate(endDate.getDate() - 1);
-            else if (preset === '1w') startDate.setDate(endDate.getDate() - 7);
-            else if (preset === '1m') startDate.setMonth(endDate.getMonth() - 1);
-            else if (preset === '3m') startDate.setMonth(endDate.getMonth() - 3);
-            else if (preset === '6m') startDate.setMonth(endDate.getMonth() - 6);
-            else if (preset === '1y') startDate.setFullYear(endDate.getFullYear() - 1);
-
-            const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-            startInput.value = formatDate(startDate);
-            endInput.value = formatDate(endDate);
-            codeCurrentPage = 1;
-            updateTable();
-          };
+      // 소분류 mock 데이터 초기화
+      const subValues = {};
+      const initSubValues = () => {
+        (codeList[0]?.values || []).slice(0, 5).forEach((v, vi) => {
+          subValues[v.id] = [
+            { id: 9000 + vi*10+1, code: v.valCode+'_A', name: v.valName+'-소분류A', order:1, useStatus:'사용(Y)', regDate:'2026. 06. 09', regUser:'이희성', editDate:'' },
+            { id: 9000 + vi*10+2, code: v.valCode+'_B', name: v.valName+'-소분류B', order:2, useStatus:'중지(N)', regDate:'2026. 06. 09', regUser:'이희성', editDate:'' }
+          ];
         });
+      };
+      initSubValues();
 
-        wrapper.querySelector('#btn-code-search').onclick = () => {
-          codeCurrentPage = 1;
-          updateTable();
-        };
+      let selectedTopId = codeList.length > 0 ? codeList[0].id : null;
+      let selectedMidId = null;
+      let topKw = '', midKw = '', subKw = '';
+      let cmColType = null;
+      let cmEditItem = null;
 
-        wrapper.querySelector('#btn-code-reset').onclick = () => {
-          startInput.value = '';
-          endInput.value = '';
-          clearPresets();
-          wrapper.querySelector('input[name="code-search-status"][value="전체"]').checked = true;
-          wrapper.querySelector('#code-search-key').value = '전체';
-          wrapper.querySelector('#code-search-keyword').value = '';
-          codeCurrentPage = 1;
-          updateTable();
-        };
+      const colH = `display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--sidebar-bg);border-bottom:1px solid var(--border);font-weight:700;font-size:13px;color:var(--navy);`;
 
-        wrapper.querySelector('#select-code-page-size').onchange = (e) => {
-          codePageSize = parseInt(e.target.value);
-          codeCurrentPage = 1;
-          updateTable();
-        };
-
-        updateTable();
-      }, 50);
-
-      return wrapper;
-    }
-
-    let activeEditValueId = null;
-
-    function getCodeRegisterTemplate() {
-      const wrapper = document.createElement('div');
-      const isEdit = activeEditCodeId !== null;
-      const codeItem = isEdit ? codeList.find(c => c.id === activeEditCodeId) : null;
-
-      const codeVal = isEdit ? codeItem.code : `KepcoES${String(codeList.length + 1).padStart(4, '0')}(자동 발번)`;
-      const codeNameVal = isEdit ? codeItem.codeName : '';
-      const codeDescVal = isEdit ? codeItem.codeDesc : '';
-      const isUseChecked = isEdit ? (codeItem.useStatus === '사용(Y)' ? 'checked' : '') : 'checked';
-      const isStopChecked = isEdit ? (codeItem.useStatus === '중지(N)' ? 'checked' : '') : '';
-      const regDateVal = isEdit ? codeItem.regDate : '2026. 06. 16';
-      const regUserVal = isEdit ? codeItem.regUser : '이희성';
-      const editDateVal = isEdit ? codeItem.editDate : '—';
+      const buildColHtml = (cid, title, placeholder) => `
+        <div style="display:flex;flex-direction:column;min-height:420px;">
+          <div style="${colH}">
+            <span>${title}</span>
+            <span id="code-${cid}-count" class="badge badge-secondary" style="font-size:11px; margin:0;">0건</span>
+          </div>
+          <div style="padding:8px 10px;border-bottom:1px solid var(--border);display:flex;gap:6px;">
+            <input type="text" id="code-${cid}-kw" class="form-control" style="height:30px;font-size:12px;padding:0 8px;flex:1;" placeholder="${placeholder}"
+              onkeydown="if(event.key==='Enter')cmSearch('${cid}')">
+            <button class="btn btn-outline" style="height:30px;padding:0 8px;font-size:12px;" onclick="cmSearch('${cid}')">검색</button>
+          </div>
+          <div style="flex:1;overflow-y:auto;max-height:380px;">
+            <table class="data-table" style="font-size:12px;">
+              <thead><tr>
+                <th style="text-align:center;width:36px;">No</th>
+                <th>코드명</th>
+                <th style="width:54px;text-align:center;">사용</th>
+                <th style="width:46px;text-align:center;">삭제</th>
+              </tr></thead>
+              <tbody id="code-${cid}-tbody"></tbody>
+            </table>
+          </div>
+          <div style="padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:6px;justify-content:flex-end;">
+            <button class="btn btn-outline" style="height:28px;padding:0 10px;font-size:12px;" onclick="cmApplyOrder('${cid}')">순서 적용</button>
+            <button class="btn btn-primary" style="height:28px;padding:0 12px;font-size:12px;" onclick="cmOpenModal('${cid}',null)">등록</button>
+          </div>
+        </div>`;
 
       wrapper.innerHTML = `
         <div class="card">
-          <div class="card-title">코드 정보</div>
-          <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <div class="card-title" style="margin:0;">코드 목록</div>
+            <button class="btn btn-outline" style="height:32px;padding:0 14px;font-size:13px;" onclick="alert('전체 코드 목록이 엑셀(.xlsx)로 다운로드되었습니다.')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              엑셀 다운로드
+            </button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+            <div id="cm-top-col">${buildColHtml('top','대분류','대분류 검색')}</div>
+            <div id="cm-mid-col" style="border-left:1px solid var(--border);">${buildColHtml('mid','중분류','중분류 검색')}</div>
+            <div id="cm-sub-col" style="border-left:1px solid var(--border);">${buildColHtml('sub','소분류','소분류 검색')}</div>
+          </div>
+        </div>`;
+
+      // ── 코드 관리 팝업 모달 ──
+      const modal = document.createElement('div');
+      modal.id = 'code-mgmt-modal';
+      modal.className = 'manual-modal';
+      modal.style.width = '480px';
+      modal.style.maxWidth = '95vw';
+      modal.innerHTML = `
+        <div class="manual-modal-header" style="background-color:var(--navy);">
+          <h3 id="cm-modal-title">코드 관리</h3>
+          <button class="manual-modal-close" onclick="cmCloseModal()">×</button>
+        </div>
+        <div class="manual-modal-body" style="padding:20px;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
             <div class="form-group">
-              <label>코드</label>
-              <input type="text" class="form-control" readonly style="background-color:var(--bg); color:var(--text-muted); cursor:not-allowed;" value="${codeVal}">
+              <label style="font-size:13px;font-weight:600;color:var(--text-label);">상위코드</label>
+              <input type="text" id="cm-parent-code" class="form-control" readonly style="background:var(--bg);color:var(--text-muted);cursor:not-allowed;">
             </div>
             <div class="form-group">
-              <label>코드(논리명) <span class="required">*</span></label>
-              <input type="text" id="code-reg-name" class="form-control" placeholder="20자 이내로 작성해주세요." value="${codeNameVal}">
+              <label style="font-size:13px;font-weight:600;color:var(--text-label);">코드 <span style="font-size:11px;color:var(--text-muted);">(자동 발번)</span></label>
+              <input type="text" id="cm-code-val" class="form-control" readonly style="background:var(--bg);color:var(--text-muted);cursor:not-allowed;">
             </div>
             <div class="form-group">
-              <label>코드설명 <span class="required">*</span></label>
-              <input type="text" id="code-reg-desc" class="form-control" placeholder="100자 이내로 간략히 작성해주세요." value="${codeDescVal}">
+              <label style="font-size:13px;font-weight:600;color:var(--text-label);">코드명 <span class="required">*</span></label>
+              <input type="text" id="cm-name" class="form-control" placeholder="20자 이내로 작성해주세요." maxlength="20">
             </div>
             <div class="form-group">
-              <label>사용여부</label>
-              <div class="radio-group">
-                <label class="radio-item"><input type="radio" name="code-reg-status" value="사용(Y)" ${isUseChecked}> 사용(Y)</label>
-                <label class="radio-item"><input type="radio" name="code-reg-status" value="중지(N)" ${isStopChecked}> 중지(N)</label>
+              <label style="font-size:13px;font-weight:600;color:var(--text-label);">사용여부 <span class="required">*</span></label>
+              <div class="radio-group" style="display:flex;gap:16px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="cm-status" value="사용(Y)" checked> 사용(Y)</label>
+                <label class="radio-item"><input type="radio" name="cm-status" value="중지(N)"> 중지(N)</label>
               </div>
             </div>
             <div class="form-group">
-              <label>등록일시</label>
-              <input type="text" class="form-control" readonly style="background-color:var(--bg); color:var(--text-muted); cursor:not-allowed;" value="${regDateVal}">
+              <label style="font-size:13px;font-weight:600;color:var(--text-label);">코드설명</label>
+              <textarea id="cm-desc" class="form-control" style="height:68px;resize:vertical;" placeholder="코드에 대한 간략한 설명을 입력해주세요."></textarea>
             </div>
-            <div class="form-group">
-              <label>등록자</label>
-              <input type="text" class="form-control" readonly style="background-color:var(--bg); color:var(--text-muted); cursor:not-allowed;" value="${regUserVal}">
-            </div>
-            <div class="form-group">
-              <label>최종수정일시</label>
-              <input type="text" class="form-control" readonly style="background-color:var(--bg); color:var(--text-muted); cursor:not-allowed;" value="${editDateVal}">
+            <div style="background:var(--bg);padding:10px;border-radius:var(--radius-sm);font-size:12px;color:var(--text-muted);border:1px dashed var(--border);">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+                <div>등록일시: <span id="cm-reg-date">—</span></div>
+                <div>등록자: <span id="cm-reg-user">이희성</span></div>
+                <div style="grid-column:1/-1;">최종수정: <span id="cm-edit-date">—</span></div>
+              </div>
             </div>
           </div>
-          <div style="display:flex; gap:8px; margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
-            <button class="btn btn-secondary" onclick="selectMenu('common-4', '코드 목록')">목록</button>
-            <button class="btn btn-primary" onclick="submitCodeReg()" style="background-color: var(--blue); margin-left:auto;">${isEdit ? '수정' : '등록'}</button>
-            ${isEdit ? `<button class="btn btn-outline" onclick="deleteCodeParent()" style="color:var(--red-dk); border-color:var(--red-md);">삭제</button>` : ''}
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:14px;">
+            <button class="btn btn-primary" id="cm-btn-reg" onclick="cmSave(false)">등록</button>
+            <button class="btn btn-primary" id="cm-btn-upd" onclick="cmSave(true)" style="display:none;">수정</button>
+            <button class="btn btn-outline" onclick="cmCloseModal()">취소</button>
           </div>
-        </div>
+        </div>`;
+      document.body.appendChild(modal);
 
-        ${isEdit ? `
-        <div class="card" style="margin-top:24px;">
-          <div class="card-title">값 (전체 <span id="code-val-count">${codeItem.values.length}</span>건)</div>
-          <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
-             <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px; background-color:orange; color:white; border-color:orange; margin-right:8px;" onclick="applyValueOrder()">순서 적용</button>
-             <button class="btn btn-primary" style="height:32px; padding:0 12px; font-size:13px; background-color: var(--blue);" onclick="openValueAddModal()">값 추가하기</button>
-          </div>
-          <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th style="width:70px; text-align:center;">No</th>
-                  <th>코드</th>
-                  <th>값(논리명)</th>
-                  <th style="width:90px; text-align:center;">사용여부</th>
-                  <th>등록일</th>
-                  <th>등록자</th>
-                  <th style="width:95px; text-align:center;">순서</th>
-                  <th style="width:90px; text-align:center;">관리</th>
-                  <th>최종수정</th>
-                </tr>
-              </thead>
-              <tbody id="code-val-table-body"></tbody>
-            </table>
-          </div>
-        </div>` : ''}`;
+      const overlay = document.createElement('div');
+      overlay.id = 'code-mgmt-overlay';
+      overlay.className = 'manual-modal-overlay';
+      overlay.onclick = () => cmCloseModal();
+      document.body.appendChild(overlay);
+
+      const getTopItems = () => codeList.filter(c => !topKw || c.codeName.toLowerCase().includes(topKw) || c.code.toLowerCase().includes(topKw));
+      const getMidItems = () => {
+        const top = codeList.find(c => c.id === selectedTopId);
+        return (top?.values || []).filter(v => !midKw || v.valName.toLowerCase().includes(midKw));
+      };
+      const getSubItems = () => (subValues[selectedMidId] || []).filter(v => !subKw || v.name.toLowerCase().includes(subKw));
+
+      const renderTop = () => {
+        const items = getTopItems();
+        const el = wrapper.querySelector('#code-top-count');
+        if (el) el.textContent = items.length + '건';
+        const tbody = wrapper.querySelector('#code-top-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = items.map((c, i) => {
+          const act = c.id === selectedTopId;
+          return `<tr style="${act?'background:var(--blue-lt);':''}" onclick="cmSelTop(${c.id})" class="${act?'':'pointer-row'}">
+            <td style="text-align:center;color:var(--text-muted);">${i+1}</td>
+            <td style="font-weight:${act?700:400};color:${act?'var(--navy)':'inherit'};">${c.codeName}</td>
+            <td style="text-align:center;"><span class="badge ${c.useStatus==='사용(Y)'?'badge-success':'badge-danger'}" style="font-size:10px;">${c.useStatus==='사용(Y)'?'Y':'N'}</span></td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:20px;padding:0 5px;font-size:10px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.stopPropagation();cmDel('top',${c.id})">삭제</button></td>
+          </tr>`;
+        }).join('');
+      };
+
+      const renderMid = () => {
+        const items = getMidItems();
+        const el = wrapper.querySelector('#code-mid-count');
+        if (el) el.textContent = items.length + '건';
+        const tbody = wrapper.querySelector('#code-mid-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = selectedTopId ? items.map((v, i) => {
+          const act = v.id === selectedMidId;
+          return `<tr style="${act?'background:var(--blue-lt);':''}" onclick="cmSelMid(${v.id})" class="${act?'':'pointer-row'}">
+            <td style="text-align:center;color:var(--text-muted);">${i+1}</td>
+            <td style="font-weight:${act?700:400};color:${act?'var(--navy)':'inherit'};">${v.valName}</td>
+            <td style="text-align:center;"><span class="badge ${v.useStatus==='사용(Y)'?'badge-success':'badge-danger'}" style="font-size:10px;">${v.useStatus==='사용(Y)'?'Y':'N'}</span></td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:20px;padding:0 5px;font-size:10px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.stopPropagation();cmDel('mid',${v.id})">삭제</button></td>
+          </tr>`;
+        }).join('') : `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;font-size:12px;">대분류를 선택하세요</td></tr>`;
+      };
+
+      const renderSub = () => {
+        const items = getSubItems();
+        const el = wrapper.querySelector('#code-sub-count');
+        if (el) el.textContent = items.length + '건';
+        const tbody = wrapper.querySelector('#code-sub-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = selectedMidId ? items.map((v, i) => {
+          return `<tr>
+            <td style="text-align:center;color:var(--text-muted);">${i+1}</td>
+            <td>${v.name}</td>
+            <td style="text-align:center;"><span class="badge ${v.useStatus==='사용(Y)'?'badge-success':'badge-danger'}" style="font-size:10px;">${v.useStatus==='사용(Y)'?'Y':'N'}</span></td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:20px;padding:0 5px;font-size:10px;color:var(--red-dk);border-color:var(--red-md);" onclick="cmDel('sub',${v.id})">삭제</button></td>
+          </tr>`;
+        }).join('') : `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;font-size:12px;">중분류를 선택하세요</td></tr>`;
+      };
+
+      const renderAll = () => { renderTop(); renderMid(); renderSub(); };
+
+      window.cmSelTop = (id) => { selectedTopId = id; selectedMidId = null; renderAll(); };
+      window.cmSelMid = (id) => { selectedMidId = id; renderAll(); };
+      window.cmSearch = (colId) => {
+        const inp = wrapper.querySelector(`#code-${colId}-kw`);
+        if (colId==='top') topKw = inp ? inp.value.toLowerCase().trim() : '';
+        else if (colId==='mid') midKw = inp ? inp.value.toLowerCase().trim() : '';
+        else subKw = inp ? inp.value.toLowerCase().trim() : '';
+        renderAll();
+      };
+      window.cmApplyOrder = (col) => alert(`[${col==='top'?'대분류':col==='mid'?'중분류':'소분류'}] 순서가 적용되었습니다.`);
+
+      window.cmOpenModal = (colType, editItem) => {
+        cmColType = colType; cmEditItem = editItem;
+        const now = new Date();
+        const fmtD = d => `${d.getFullYear()}. ${String(d.getMonth()+1).padStart(2,'0')}. ${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        const fmtS = d => `${d.getFullYear()}. ${String(d.getMonth()+1).padStart(2,'0')}. ${String(d.getDate()).padStart(2,'0')}`;
+        let parentTxt = '', autoCode = '';
+        if (colType==='top') {
+          parentTxt = '(최상위)';
+          autoCode = `KepcoES${String(codeList.length+1).padStart(4,'0')} (자동 발번)`;
+        } else if (colType==='mid') {
+          const top = codeList.find(c => c.id===selectedTopId);
+          parentTxt = top ? `${top.code} (${top.codeName})` : '';
+          autoCode = top ? `${top.code}_${String((top.values||[]).length+1).padStart(3,'0')} (자동 발번)` : '';
+        } else {
+          const top = codeList.find(c => c.id===selectedTopId);
+          const mid = (top?.values||[]).find(v => v.id===selectedMidId);
+          parentTxt = mid ? `${mid.valCode} (${mid.valName})` : '';
+          const subs = subValues[selectedMidId]||[];
+          autoCode = mid ? `${mid.valCode}_${String(subs.length+1).padStart(3,'0')} (자동 발번)` : '';
+        }
+        document.getElementById('cm-modal-title').textContent = editItem ? '코드 수정' : '코드 등록';
+        document.getElementById('cm-parent-code').value = parentTxt;
+        document.getElementById('cm-code-val').value = editItem ? (editItem.code||editItem.valCode||'') : autoCode;
+        document.getElementById('cm-name').value = editItem ? (editItem.name||editItem.valName||editItem.codeName||'') : '';
+        document.getElementById('cm-desc').value = editItem ? (editItem.codeDesc||editItem.desc||'') : '';
+        const yR = document.querySelector('input[name="cm-status"][value="사용(Y)"]');
+        const nR = document.querySelector('input[name="cm-status"][value="중지(N)"]');
+        if (yR) yR.checked = !editItem||(editItem.useStatus==='사용(Y)');
+        if (nR) nR.checked = !!(editItem&&editItem.useStatus==='중지(N)');
+        document.getElementById('cm-reg-date').textContent = editItem?(editItem.regDate||fmtD(now)):fmtD(now);
+        document.getElementById('cm-reg-user').textContent = editItem?(editItem.regUser||'이희성'):'이희성';
+        document.getElementById('cm-edit-date').textContent = editItem?(editItem.editDate||'—'):'—';
+        document.getElementById('cm-btn-reg').style.display = editItem ? 'none' : '';
+        document.getElementById('cm-btn-upd').style.display = editItem ? '' : 'none';
+        modal.classList.add('open');
+        overlay.classList.add('open');
+      };
+
+      window.cmCloseModal = () => { modal.classList.remove('open'); overlay.classList.remove('open'); };
+
+      window.cmSave = (isEdit) => {
+        const name = (document.getElementById('cm-name').value||'').trim();
+        const status = document.querySelector('input[name="cm-status"]:checked')?.value || '사용(Y)';
+        const desc = (document.getElementById('cm-desc').value||'').trim();
+        if (!name) { alert('코드명을 입력해주세요.'); return; }
+        const now = new Date();
+        const fmtS = d => `${d.getFullYear()}. ${String(d.getMonth()+1).padStart(2,'0')}. ${String(d.getDate()).padStart(2,'0')}`;
+        if (isEdit && cmEditItem) {
+          if (cmColType==='top') { const it=codeList.find(c=>c.id===cmEditItem.id); if(it){it.codeName=name;it.useStatus=status;it.codeDesc=desc;it.editDate=`${fmtS(now)}(이희성)`;} }
+          else if (cmColType==='mid') { const top=codeList.find(c=>c.id===selectedTopId); const v=(top?.values||[]).find(v=>v.id===cmEditItem.id); if(v){v.valName=name;v.useStatus=status;v.editDate=`${fmtS(now)}(이희성)`;} }
+          else { const subs=subValues[selectedMidId]||[]; const v=subs.find(v=>v.id===cmEditItem.id); if(v){v.name=name;v.useStatus=status;v.editDate=`${fmtS(now)}(이희성)`;} }
+          alert('수정되었습니다.');
+        } else {
+          if (cmColType==='top') { codeList.push({id:Date.now(),code:`KepcoES${String(codeList.length+1).padStart(4,'0')}`,codeName:name,useStatus:status,codeDesc:desc,regDate:fmtS(now),regUser:'이희성',editDate:'',values:[]}); }
+          else if (cmColType==='mid') { const top=codeList.find(c=>c.id===selectedTopId); if(top){top.values.push({id:Date.now(),valCode:`${top.code}_${String(top.values.length+1).padStart(3,'0')}`,valName:name,useStatus:status,regDate:fmtS(now),regUser:'이희성',order:top.values.length+1,editDate:''});} }
+          else { if(!subValues[selectedMidId]) subValues[selectedMidId]=[]; const top=codeList.find(c=>c.id===selectedTopId); const mid=(top?.values||[]).find(v=>v.id===selectedMidId); subValues[selectedMidId].push({id:Date.now(),code:`${mid?.valCode||''}_${String(subValues[selectedMidId].length+1).padStart(3,'0')}`,name,useStatus:status,regDate:fmtS(now),regUser:'이희성',order:subValues[selectedMidId].length+1,editDate:''});}
+          alert('등록되었습니다.');
+        }
+        cmCloseModal(); renderAll();
+      };
+
+      window.cmDel = (colType, id) => {
+        if (!confirm(colType==='top'?'대분류를 삭제하면 연결된 중/소분류도 모두 삭제됩니다. 삭제하시겠습니까?':'해당 코드를 삭제하시겠습니까?')) return;
+        if (colType==='top') { const idx=codeList.findIndex(c=>c.id===id); if(idx!==-1){codeList.splice(idx,1);selectedTopId=codeList.length>0?codeList[0].id:null;selectedMidId=null;} }
+        else if (colType==='mid') { const top=codeList.find(c=>c.id===selectedTopId); if(top){const idx=top.values.findIndex(v=>v.id===id);if(idx!==-1){top.values.splice(idx,1);selectedMidId=null;}} }
+        else { const subs=subValues[selectedMidId]||[]; const idx=subs.findIndex(v=>v.id===id); if(idx!==-1) subs.splice(idx,1); }
+        alert('삭제되었습니다.'); renderAll();
+      };
 
       setTimeout(() => {
-        window.submitCodeReg = () => {
-          const name = document.getElementById('code-reg-name').value.trim();
-          const desc = document.getElementById('code-reg-desc').value.trim();
-          const status = document.querySelector('input[name="code-reg-status"]:checked').value;
-
-          if(!name || !desc) {
-            alert('필수(*) 항목을 입력해주세요.');
-            return;
+        renderAll();
+        // 내비게이션 이동 시 동적 모달 정리
+        const obs = new MutationObserver(() => {
+          if (!document.body.contains(wrapper)) {
+            if (document.body.contains(modal)) document.body.removeChild(modal);
+            if (document.body.contains(overlay)) document.body.removeChild(overlay);
+            obs.disconnect();
           }
-
-          if(isEdit) {
-            codeItem.codeName = name;
-            codeItem.codeDesc = desc;
-            codeItem.useStatus = status;
-            codeItem.editDate = '2026.06.16(이희성)';
-            alert('코드가 수정되었습니다.');
-          } else {
-            const newCode = {
-              id: codeList.length + 1,
-              code: `KepcoES${String(codeList.length + 1).padStart(4, '0')}`,
-              codeName: name,
-              codeDesc: desc,
-              useStatus: status,
-              regDate: '2026. 06. 16',
-              regUser: '이희성',
-              editDate: '2026.06.16(이희성)',
-              values: []
-            };
-            codeList.unshift(newCode);
-            alert('코드가 등록되었습니다.');
-          }
-          selectMenu('common-4', '코드 목록');
-        };
-
-        window.deleteCodeParent = () => {
-          if(confirm('코드 삭제 시 시스템에 영향(값 삭제, 정보 유실 등)이 있을 수 있습니다.\n시스템 관리자의 점검 후 삭제하세요.\n본 코드를 삭제하시겠습니까?')) {
-            const idx = codeList.findIndex(c => c.id === activeEditCodeId);
-            if(idx !== -1) {
-              codeList.splice(idx, 1);
-              alert('삭제되었습니다.');
-              selectMenu('common-4', '코드 목록');
-            }
-          }
-        };
-
-        window.renderValueTable = () => {
-          if(!isEdit) return;
-          const tbody = document.getElementById('code-val-table-body');
-          const sortedValues = codeItem.values.sort((a,b) => a.order - b.order);
-          document.getElementById('code-val-count').textContent = sortedValues.length;
-          
-          tbody.innerHTML = sortedValues.map((val, idx) => {
-            const statusClass = val.useStatus === '사용(Y)' ? 'badge-success' : 'badge-danger';
-            const isFirst = idx === 0;
-            const isLast = idx === sortedValues.length - 1;
-            
-            const upBtn = isFirst ? '' : `<span style="cursor:pointer; color:var(--blue); margin-right:4px;" onclick="moveValueOrder(${idx}, -1)">▲</span>`;
-            const downBtn = isLast ? '' : `<span style="cursor:pointer; color:var(--blue);" onclick="moveValueOrder(${idx}, 1)">▼</span>`;
-
-            return `<tr>
-              <td style="color:var(--text-muted); text-align:center;">${idx + 1}</td>
-              <td>${val.valCode}</td>
-              <td>${val.valName}</td>
-              <td style="text-align:center;"><span class="badge ${statusClass}">${val.useStatus}</span></td>
-              <td style="color:var(--text-muted);">${dateOnly(val.regDate)}</td>
-              <td>${val.regUser}</td>
-              <td style="text-align:center; font-size:14px;">${upBtn}${downBtn}</td>
-              <td style="text-align:center;">
-                <button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:13px;" onclick="openValueEditModal(${val.id})">관리</button>
-              </td>
-              <td style="color:var(--text-muted);">${dateOnly(val.editDate) || '—'}</td>
-            </tr>`;
-          }).join('');
-        };
-
-        window.moveValueOrder = (index, direction) => {
-          const targetIndex = index + direction;
-          if(targetIndex < 0 || targetIndex >= codeItem.values.length) return;
-          
-          const temp = codeItem.values[index].order;
-          codeItem.values[index].order = codeItem.values[targetIndex].order;
-          codeItem.values[targetIndex].order = temp;
-          
-          renderValueTable();
-        };
-
-        window.applyValueOrder = () => {
-          alert('순서 배치가 반영되었습니다.');
-          renderValueTable();
-        };
-
-        window.openValueAddModal = () => {
-          activeEditValueId = null;
-          document.getElementById('val-modal-code').value = `${codeItem.code}_${String(codeItem.values.length + 1).padStart(3, '0')}(자동 발번)`;
-          document.getElementById('val-modal-name').value = '';
-          document.getElementById('val-modal-status-y').checked = true;
-          document.getElementById('val-modal-regdate').value = '2026. 06. 16';
-          document.getElementById('val-modal-editdate').value = '—';
-
-          document.getElementById('btn-val-modal-add').style.display = 'inline-flex';
-          document.getElementById('btn-val-modal-edit').style.display = 'none';
-          document.getElementById('btn-val-modal-delete').style.display = 'none';
-
-          document.getElementById('code-value-modal').classList.add('open');
-          document.getElementById('code-value-overlay').classList.add('open');
-        };
-
-        window.openValueEditModal = (valId) => {
-          activeEditValueId = valId;
-          const valItem = codeItem.values.find(v => v.id === valId);
-          if(!valItem) return;
-
-          document.getElementById('val-modal-code').value = valItem.valCode;
-          document.getElementById('val-modal-name').value = valItem.valName;
-          
-          if(valItem.useStatus === '사용(Y)') {
-            document.getElementById('val-modal-status-y').checked = true;
-          } else {
-            document.getElementById('val-modal-status-n').checked = true;
-          }
-
-          document.getElementById('val-modal-regdate').value = valItem.regDate;
-          document.getElementById('val-modal-editdate').value = valItem.editDate || '—';
-
-          document.getElementById('btn-val-modal-add').style.display = 'none';
-          document.getElementById('btn-val-modal-edit').style.display = 'inline-flex';
-          document.getElementById('btn-val-modal-delete').style.display = 'inline-flex';
-
-          document.getElementById('code-value-modal').classList.add('open');
-          document.getElementById('code-value-overlay').classList.add('open');
-        };
-
-        renderValueTable();
+        });
+        if (wrapper.parentNode) obs.observe(wrapper.parentNode, {childList:true});
       }, 50);
 
       return wrapper;
     }
-
-    window.closeCodeValueModal = () => {
-      document.getElementById('code-value-modal').classList.remove('open');
-      document.getElementById('code-value-overlay').classList.remove('open');
-    };
-
-    window.saveCodeValue = (isEdit) => {
-      const parentCodeItem = codeList.find(c => c.id === activeEditCodeId);
-      if(!parentCodeItem) return;
-
-      const name = document.getElementById('val-modal-name').value.trim();
-      const status = document.querySelector('input[name="val-modal-status"]:checked').value;
-
-      if(!name) {
-        alert('필수(*) 항목을 입력해주세요.');
-        return;
-      }
-
-      if(isEdit) {
-        const valItem = parentCodeItem.values.find(v => v.id === activeEditValueId);
-        if(valItem) {
-          valItem.valName = name;
-          valItem.useStatus = status;
-          valItem.editDate = '2026.06.16(이희성)';
-          alert('수정되었습니다.');
-        }
-      } else {
-        const nextId = parentCodeItem.values.length > 0 ? Math.max(...parentCodeItem.values.map(v => v.id)) + 1 : 1;
-        const nextOrder = parentCodeItem.values.length > 0 ? Math.max(...parentCodeItem.values.map(v => v.order)) + 1 : 1;
-        const newCodeVal = {
-          id: nextId,
-          valCode: `${parentCodeItem.code}_${String(nextId).padStart(3, '0')}`,
-          valName: name,
-          useStatus: status,
-          regDate: '2026. 06. 16',
-          regUser: '이희성',
-          order: nextOrder,
-          editDate: '2026.06.16(이희성)'
-        };
-        parentCodeItem.values.push(newCodeVal);
-        alert('추가되었습니다.');
-      }
-      
-      closeCodeValueModal();
-      renderValueTable();
-    };
-
-    window.deleteCodeValue = () => {
-      if(confirm('코드(값) 삭제 시 시스템에 영향(값 삭제, 정보 유실 등)이 있을 수 있습니다.\n시스템 관리자의 점검 후 삭제하세요.\n본 코드를 삭제하시겠습니까?')) {
-        const parentCodeItem = codeList.find(c => c.id === activeEditCodeId);
-        if(!parentCodeItem) return;
-
-        const idx = parentCodeItem.values.findIndex(v => v.id === activeEditValueId);
-        if(idx !== -1) {
-          parentCodeItem.values.splice(idx, 1);
-          alert('삭제되었습니다.');
-          closeCodeValueModal();
-          renderValueTable();
-        }
-      }
-    };
-
-
     /* ── 로그인 현황 템플릿 ── */
     function getLoginStatusTemplate() {
       const wrapper = document.createElement('div');
@@ -7977,6 +7614,1023 @@
 
       return wrapper;
     }
+
+    /* ── 협력업체 관리 - 목록 ── */
+    function getPartnerListTemplate() {
+      const wrapper = document.createElement('div');
+
+      wrapper.innerHTML = `
+        <div class="card search-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+            <div class="card-title" style="margin:0;">검색 조건</div>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;padding:3px 10px;">ERP 연동 필요</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">조회기간 (등록일)</label>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <div class="date-presets" style="display:flex;gap:4px;margin-right:4px;">
+                  <button type="button" class="date-preset-btn" data-preset="1m">1개월</button>
+                  <button type="button" class="date-preset-btn" data-preset="3m">3개월</button>
+                  <button type="button" class="date-preset-btn active" data-preset="6m">6개월</button>
+                  <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
+                </div>
+                <input type="date" id="pt-start" class="form-control" style="width:150px;" value="2026-01-01">
+                <span style="color:var(--text-muted);">~</span>
+                <input type="date" id="pt-end" class="form-control" style="width:150px;" value="2026-06-30">
+              </div>
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">휴폐업구분</label>
+              <div class="radio-group" style="display:flex;gap:16px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="pt-status" value="전체" checked> 전체</label>
+                <label class="radio-item"><input type="radio" name="pt-status" value="정상"> 정상</label>
+                <label class="radio-item"><input type="radio" name="pt-status" value="중지"> 중지</label>
+                <label class="radio-item"><input type="radio" name="pt-status" value="폐업"> 폐업</label>
+              </div>
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">키워드 검색</label>
+              <div style="display:flex;gap:8px;width:500px;max-width:100%;">
+                <select id="pt-key" class="form-control" style="width:140px;flex-shrink:0;">
+                  <option value="전체">전체</option>
+                  <option value="거래처명">거래처명</option>
+                  <option value="거래처코드">거래처코드</option>
+                  <option value="사업자등록번호">사업자등록번호</option>
+                  <option value="대표자명">대표자명</option>
+                  <option value="거래담당자">거래담당자</option>
+                </select>
+                <input type="text" id="pt-kw" class="form-control" style="flex:1;" placeholder="검색어를 입력하세요.">
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-primary" id="pt-btn-search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              검색
+            </button>
+            <button class="btn btn-outline" id="pt-btn-reset">초기화</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+            <div class="card-title" style="margin:0;">협력업체 목록</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text-muted);">전체 <strong id="pt-total" style="color:var(--blue);">0</strong>건</span>
+              <select id="pt-page-size" class="form-control" style="width:110px;height:32px;font-size:13px;padding:0 8px;margin:0;">
+                <option value="10">10개씩</option>
+                <option value="20">20개씩</option>
+                <option value="50">50개씩</option>
+              </select>
+              <button class="btn btn-outline" style="height:32px;padding:0 12px;font-size:13px;" onclick="alert('협력업체 목록이 엑셀(.xlsx)로 다운로드되었습니다.')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                다운로드(Excel)
+              </button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px;text-align:center;">No</th>
+                  <th>거래처코드</th>
+                  <th>거래처명</th>
+                  <th>사업자등록번호</th>
+                  <th>대표자명</th>
+                  <th>거래담당자</th>
+                  <th style="width:80px;text-align:center;">휴폐업구분</th>
+                  <th>등록일</th>
+                  <th>등록자</th>
+                  <th style="width:80px;text-align:center;">상세정보</th>
+                  <th>최종수정</th>
+                </tr>
+              </thead>
+              <tbody id="pt-tbody"></tbody>
+            </table>
+          </div>
+          <div class="table-footer" style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;">
+            <div></div>
+            <div class="pagination" id="pt-pagination"></div>
+            <div></div>
+          </div>
+        </div>`;
+
+      setTimeout(() => {
+        let pageSize = 10, curPage = 1;
+
+        const statusBadge = (s) => {
+          const cls = s==='정상'?'badge-success':s==='중지'?'badge-warning':'badge-danger';
+          return `<span class="badge ${cls}">${s}</span>`;
+        };
+
+        const updateTable = () => {
+          const key = wrapper.querySelector('#pt-key').value;
+          const kw = wrapper.querySelector('#pt-kw').value.toLowerCase().trim();
+          const statusVal = wrapper.querySelector('input[name="pt-status"]:checked').value;
+          const filtered = partnerList.filter(p => {
+            if (statusVal !== '전체' && p.status !== statusVal) return false;
+            if (kw) {
+              if (key==='전체') return Object.values(p).some(v=>String(v).toLowerCase().includes(kw));
+              if (key==='거래처명') return p.name.toLowerCase().includes(kw);
+              if (key==='거래처코드') return p.code.toLowerCase().includes(kw);
+              if (key==='사업자등록번호') return p.bizNo.includes(kw);
+              if (key==='대표자명') return p.ceo.toLowerCase().includes(kw);
+              if (key==='거래담당자') return p.manager.toLowerCase().includes(kw);
+            }
+            return true;
+          });
+          const total = filtered.length, pages = Math.ceil(total/pageSize)||1;
+          if (curPage > pages) curPage = pages;
+          const start = (curPage-1)*pageSize;
+          const paged = filtered.slice(start, start+pageSize);
+          wrapper.querySelector('#pt-total').textContent = total;
+          wrapper.querySelector('#pt-tbody').innerHTML = paged.map((p, i) => `<tr>
+            <td style="text-align:center;color:var(--text-muted);font-size:13px;">${start+i+1}</td>
+            <td style="font-family:monospace;font-size:13px;color:var(--text-muted);">${p.code}</td>
+            <td style="font-weight:600;">${p.name}</td>
+            <td style="font-size:13px;color:var(--text-muted);">${p.bizNo}</td>
+            <td>${p.ceo}</td>
+            <td style="font-size:13px;">${p.manager}<br><span style="color:var(--text-muted);font-size:11px;">${p.managerEmail}</span></td>
+            <td style="text-align:center;">${statusBadge(p.status)}</td>
+            <td style="color:var(--text-muted);font-size:13px;">${p.regDate}</td>
+            <td>${p.regUser}</td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:26px;padding:0 8px;font-size:13px;" onclick="openPartnerDetail(${p.id})">상세보기</button></td>
+            <td style="color:var(--text-muted);font-size:13px;">${p.editDate||'—'}</td>
+          </tr>`).join('');
+
+          const pag = wrapper.querySelector('#pt-pagination');
+          let h = `<button class="page-btn" onclick="ptGoPage(1)">&laquo;</button>`;
+          for (let i=1; i<=pages; i++) h += `<button class="page-btn ${i===curPage?'active':''}" onclick="ptGoPage(${i})">${i}</button>`;
+          h += `<button class="page-btn" onclick="ptGoPage(${pages})">&raquo;</button>`;
+          pag.innerHTML = h;
+        };
+
+        window.ptGoPage = (p) => { curPage=p; updateTable(); };
+        window.openPartnerDetail = (id) => { selectedPartnerId=id; selectMenu('common-7','협력업체 상세'); };
+
+        const presetBtns = wrapper.querySelectorAll('.date-preset-btn');
+        presetBtns.forEach(btn => {
+          btn.onclick = () => {
+            presetBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const preset = btn.getAttribute('data-preset');
+            const e = new Date(), s = new Date();
+            if (preset==='1m') s.setMonth(e.getMonth()-1);
+            else if (preset==='3m') s.setMonth(e.getMonth()-3);
+            else if (preset==='6m') s.setMonth(e.getMonth()-6);
+            else s.setFullYear(e.getFullYear()-1);
+            const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            wrapper.querySelector('#pt-start').value = fmt(s);
+            wrapper.querySelector('#pt-end').value = fmt(e);
+          };
+        });
+        wrapper.querySelector('#pt-btn-search').onclick = () => { curPage=1; updateTable(); };
+        wrapper.querySelector('#pt-btn-reset').onclick = () => {
+          wrapper.querySelector('#pt-kw').value = '';
+          wrapper.querySelector('input[name="pt-status"][value="전체"]').checked = true;
+          presetBtns.forEach(b => b.classList.remove('active'));
+          curPage=1; updateTable();
+        };
+        wrapper.querySelector('#pt-page-size').onchange = e => { pageSize=parseInt(e.target.value); curPage=1; updateTable(); };
+        updateTable();
+      }, 50);
+
+      return wrapper;
+    }
+
+    /* ── 협력업체 관리 - 상세 ── */
+    function getPartnerDetailTemplate() {
+      const p = partnerList.find(x => x.id === selectedPartnerId) || partnerList[0];
+      const wrapper = document.createElement('div');
+      const statusBadge = (s) => { const cls=s==='정상'?'badge-success':s==='중지'?'badge-warning':'badge-danger'; return `<span class="badge ${cls}">${s}</span>`; };
+      const roStyle = `background:var(--bg);color:var(--text-muted);cursor:not-allowed;`;
+
+      wrapper.innerHTML = `
+        <div class="card" style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+            <div class="card-title" style="margin:0;">ERP 기본정보</div>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;">ERP 연동 (읽기전용)</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">거래처코드</label>
+              <input class="form-control" readonly style="${roStyle}" value="${p.code}"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">거래처명</label>
+              <input class="form-control" readonly style="${roStyle}" value="${p.name}"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">사업자등록번호</label>
+              <input class="form-control" readonly style="${roStyle}" value="${p.bizNo}"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">대표자명</label>
+              <input class="form-control" readonly style="${roStyle}" value="${p.ceo}"></div>
+            <div class="form-group" style="grid-column:1/-1;"><label style="font-size:13px;font-weight:600;color:var(--text-label);">주소</label>
+              <input class="form-control" readonly style="${roStyle}" value="${p.address}"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">거래담당자</label>
+              <input class="form-control" readonly style="${roStyle}" value="${p.manager} (${p.managerEmail} / ${p.managerTel})"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">휴폐업구분</label>
+              <div style="height:38px;display:flex;align-items:center;">${statusBadge(p.status)}</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">PMS 추가정보</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">신용등급</label>
+              <select id="pd-credit" class="form-control">
+                ${['AAA','AA+','AA','AA-','A+','A','A-','BBB+','BBB','BBB-','BB','B','CCC','CC','C','D'].map(g=>`<option${g===p.creditGrade?' selected':''}>${g}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">부채비율</label>
+              <input type="text" id="pd-debt" class="form-control" value="${p.debtRatio}" placeholder="예: 45.2%"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">기업매출 (당해년도)</label>
+              <input type="text" id="pd-sales1" class="form-control" value="${p.sales1}" placeholder="예: 120억"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">기업매출 (전년도)</label>
+              <input type="text" id="pd-sales2" class="form-control" value="${p.sales2}" placeholder="예: 98억"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">기업매출 (전전년도)</label>
+              <input type="text" id="pd-sales3" class="form-control" value="${p.sales3}" placeholder="예: 85억"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">시공경험 3년 누계</label>
+              <input type="text" id="pd-constexp" class="form-control" value="${p.constExp}" placeholder="예: 230억"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">상시근로자수</label>
+              <input type="number" id="pd-workers" class="form-control" value="${p.workers}" placeholder="예: 15"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">연대보증</label>
+              <div class="radio-group" style="display:flex;gap:16px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="pd-guarantee" value="있음"${p.guarantee==='있음'?' checked':''}> 있음</label>
+                <label class="radio-item"><input type="radio" name="pd-guarantee" value="없음"${p.guarantee==='없음'?' checked':''}> 없음</label>
+              </div>
+            </div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">신인도(ISO 인증)</label>
+              <div class="radio-group" style="display:flex;gap:16px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="pd-credit-iso" value="있음"${p.creditISO==='있음'?' checked':''}> 있음</label>
+                <label class="radio-item"><input type="radio" name="pd-credit-iso" value="없음"${p.creditISO==='없음'?' checked':''}> 없음</label>
+              </div>
+            </div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">보증구분</label>
+              <select id="pd-gtype" class="form-control">
+                ${['이행보증금','공공기관','기타'].map(t=>`<option${t===p.guaranteeType?' selected':''}>${t}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group" style="grid-column:1/-1;"><label style="font-size:13px;font-weight:600;color:var(--text-label);">보증내역</label>
+              <input type="text" id="pd-gdetail" class="form-control" value="${p.guaranteeDetail}" placeholder="예: 지급보증보험 100%"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">에너지사용자 소재지 (시/도)</label>
+              <select id="pd-loc" class="form-control">
+                ${['서울특별시','부산광역시','대구광역시','인천광역시','광주광역시','대전광역시','울산광역시','세종특별자치시','경기도','강원도','충청북도','충청남도','전라북도','전라남도','경상북도','경상남도','제주특별자치도'].map(l=>`<option${l===p.location?' selected':''}>${l}</option>`).join('')}
+              </select>
+            </div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">세부 주소 (시/군/구)</label>
+              <input type="text" id="pd-locdetail" class="form-control" value="${p.locationDetail}" placeholder="예: 송파구"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">에너지 담당자명</label>
+              <input type="text" id="pd-emgr" class="form-control" value="${p.energyManager}" placeholder="담당자 성함"></div>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">연락처</label>
+              <input type="text" id="pd-contact" class="form-control" value="${p.contact}" placeholder="010-0000-0000"></div>
+          </div>
+          <div style="background:var(--bg);padding:10px 14px;border-radius:var(--radius-sm);border:1px dashed var(--border);font-size:12px;color:var(--text-muted);margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+            <div>등록일시: <strong>${p.regDate}</strong></div>
+            <div>등록자: <strong>${p.regUser}</strong></div>
+            <div>최종수정: <strong>${p.editDate||'—'}</strong></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-outline" onclick="selectMenu('common-7','협력업체 목록')">목록</button>
+            <button class="btn btn-primary" id="pd-btn-save">수정 저장</button>
+          </div>
+        </div>`;
+
+      setTimeout(() => {
+        wrapper.querySelector('#pd-btn-save').onclick = () => {
+          const idx = partnerList.findIndex(x => x.id === p.id);
+          if (idx === -1) return;
+          const now = new Date();
+          const fmtS = d => `${d.getFullYear()}. ${String(d.getMonth()+1).padStart(2,'0')}. ${String(d.getDate()).padStart(2,'0')}`;
+          partnerList[idx] = {
+            ...partnerList[idx],
+            creditGrade: wrapper.querySelector('#pd-credit').value,
+            debtRatio: wrapper.querySelector('#pd-debt').value,
+            sales1: wrapper.querySelector('#pd-sales1').value,
+            sales2: wrapper.querySelector('#pd-sales2').value,
+            sales3: wrapper.querySelector('#pd-sales3').value,
+            constExp: wrapper.querySelector('#pd-constexp').value,
+            workers: parseInt(wrapper.querySelector('#pd-workers').value)||0,
+            guarantee: wrapper.querySelector('input[name="pd-guarantee"]:checked')?.value||'없음',
+            creditISO: wrapper.querySelector('input[name="pd-credit-iso"]:checked')?.value||'없음',
+            guaranteeType: wrapper.querySelector('#pd-gtype').value,
+            guaranteeDetail: wrapper.querySelector('#pd-gdetail').value,
+            location: wrapper.querySelector('#pd-loc').value,
+            locationDetail: wrapper.querySelector('#pd-locdetail').value,
+            energyManager: wrapper.querySelector('#pd-emgr').value,
+            contact: wrapper.querySelector('#pd-contact').value,
+            editDate: `${fmtS(now)}(이희성)`
+          };
+          alert('협력업체 PMS 추가정보가 저장되었습니다.');
+          selectMenu('common-7','협력업체 목록');
+        };
+      }, 50);
+
+      return wrapper;
+    }
+
+    /* ── 공지사항 관리 - 목록 ── */
+    function getNoticeListTemplate() {
+      const wrapper = document.createElement('div');
+
+      // 상세보기 모달 생성 (동적)
+      const detailModal = document.createElement('div');
+      detailModal.id = 'notice-detail-modal';
+      detailModal.className = 'manual-modal';
+      detailModal.style.width = '720px';
+      detailModal.style.maxWidth = '95vw';
+      detailModal.innerHTML = `
+        <div class="manual-modal-header" style="background-color:var(--navy);">
+          <h3>공지사항 상세</h3>
+          <button class="manual-modal-close" onclick="ntCloseDetail()">×</button>
+        </div>
+        <div class="manual-modal-body" style="padding:20px;max-height:70vh;overflow-y:auto;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <div><span style="font-size:12px;color:var(--text-muted);">게시대상</span><div id="ntd-target" style="font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">우선노출</span><div id="ntd-pinned" style="font-weight:700;margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">게시여부</span><div id="ntd-status" style="font-weight:700;margin-top:4px;"></div></div>
+            <div style="grid-column:1/-1;"><span style="font-size:12px;color:var(--text-muted);">제목</span><div id="ntd-title" style="font-size:16px;font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">게시기간</span><div id="ntd-period" style="margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">작성자</span><div id="ntd-author" style="margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">조회수</span><div id="ntd-views" style="margin-top:4px;"></div></div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">내용</div>
+            <div id="ntd-content" style="min-height:100px;background:var(--bg);padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:14px;line-height:1.7;white-space:pre-wrap;"></div>
+          </div>
+          <div id="ntd-files-wrap" style="display:none;">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">첨부파일</div>
+            <div id="ntd-files" style="display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:14px;">
+            <button class="btn btn-outline" onclick="ntCloseDetail()">목록</button>
+            <button class="btn btn-primary" onclick="ntOpenEdit()">수정</button>
+            <button class="btn btn-outline" style="color:var(--red-dk);border-color:var(--red-md);" onclick="ntDeleteFromDetail()">삭제</button>
+          </div>
+        </div>`;
+      document.body.appendChild(detailModal);
+
+      const detailOverlay = document.createElement('div');
+      detailOverlay.id = 'notice-detail-overlay';
+      detailOverlay.className = 'manual-modal-overlay';
+      detailOverlay.onclick = () => ntCloseDetail();
+      document.body.appendChild(detailOverlay);
+
+      window.ntCloseDetail = () => {
+        detailModal.classList.remove('open');
+        detailOverlay.classList.remove('open');
+      };
+      window.ntOpenDetail = (id) => {
+        const n = noticeList.find(x => x.id===id);
+        if (!n) return;
+        selectedNoticeId = id;
+        n.views = (n.views||0) + 1;
+        document.getElementById('ntd-target').textContent = n.target;
+        document.getElementById('ntd-pinned').innerHTML = n.pinned==='Y'?`<span class="badge badge-warning" style="font-size:11px;">우선노출</span>`:'—';
+        document.getElementById('ntd-status').innerHTML = n.postStatus==='게시'?`<span class="badge badge-success">게시</span>`:`<span class="badge badge-secondary">미게시</span>`;
+        document.getElementById('ntd-title').textContent = n.title;
+        document.getElementById('ntd-period').textContent = n.period;
+        document.getElementById('ntd-author').textContent = n.author;
+        document.getElementById('ntd-views').textContent = n.views.toLocaleString()+'회';
+        document.getElementById('ntd-content').textContent = n.content || '(내용이 없습니다.)';
+        const fw = document.getElementById('ntd-files-wrap');
+        const fd = document.getElementById('ntd-files');
+        if (n.files && n.files.length > 0) {
+          fw.style.display='';
+          fd.innerHTML = n.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span style="flex:1;">${f}</span>
+            <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 미리봅니다: ${f}')">바로보기</button>
+            <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 다운로드합니다: ${f}')">다운로드</button>
+          </div>`).join('');
+        } else fw.style.display = 'none';
+        updateTable();
+        detailModal.classList.add('open');
+        detailOverlay.classList.add('open');
+      };
+      window.ntOpenEdit = () => {
+        ntCloseDetail();
+        noticeEditMode = true;
+        selectMenu('common-8','공지사항 등록');
+      };
+      window.ntDeleteFromDetail = () => {
+        const n = noticeList.find(x => x.id===selectedNoticeId);
+        if (!n) return;
+        if (!confirm(`"${n.title}"\n\n해당 공지사항을 삭제하시겠습니까?`)) return;
+        const idx = noticeList.findIndex(x => x.id===selectedNoticeId);
+        if (idx !== -1) noticeList.splice(idx, 1);
+        ntCloseDetail();
+        alert('삭제되었습니다.');
+        updateTable();
+      };
+
+      wrapper.innerHTML = `
+        <div class="card search-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+            <div class="card-title" style="margin:0;">검색 조건</div>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;padding:3px 10px;">ERP 연동 필요</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">조회기간</label>
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <div class="date-presets" style="display:flex;gap:4px;margin-right:4px;">
+                  <button type="button" class="date-preset-btn" data-preset="1m">1개월</button>
+                  <button type="button" class="date-preset-btn" data-preset="3m">3개월</button>
+                  <button type="button" class="date-preset-btn active" data-preset="6m">6개월</button>
+                  <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
+                </div>
+                <input type="date" id="nt-start" class="form-control" style="width:150px;" value="2026-01-01">
+                <span style="color:var(--text-muted);">~</span>
+                <input type="date" id="nt-end" class="form-control" style="width:150px;" value="2026-06-30">
+              </div>
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">게시여부</label>
+              <div class="radio-group" style="display:flex;gap:16px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="nt-post-status" value="전체" checked> 전체</label>
+                <label class="radio-item"><input type="radio" name="nt-post-status" value="게시"> 게시</label>
+                <label class="radio-item"><input type="radio" name="nt-post-status" value="미게시"> 미게시</label>
+              </div>
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">키워드 검색</label>
+              <div style="display:flex;gap:8px;width:500px;max-width:100%;">
+                <select id="nt-key" class="form-control" style="width:130px;flex-shrink:0;">
+                  <option value="전체">전체</option>
+                  <option value="제목">제목</option>
+                  <option value="작성자">작성자</option>
+                  <option value="게시대상">게시대상</option>
+                </select>
+                <input type="text" id="nt-kw" class="form-control" style="flex:1;" placeholder="검색어를 입력하세요.">
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-primary" id="nt-btn-search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 검색
+            </button>
+            <button class="btn btn-outline" id="nt-btn-reset">초기화</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+            <div class="card-title" style="margin:0;">공지사항 목록</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text-muted);">전체 <strong id="nt-total" style="color:var(--blue);">0</strong>건</span>
+              <button class="btn btn-primary" onclick="ntOpenRegister()" style="height:32px;padding:0 14px;font-size:13px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                등록
+              </button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px;text-align:center;">No</th>
+                  <th style="width:70px;text-align:center;">게시구분</th>
+                  <th style="width:70px;text-align:center;">우선노출</th>
+                  <th>제목</th>
+                  <th>게시기간</th>
+                  <th style="width:80px;">작성자</th>
+                  <th style="width:90px;">등록일</th>
+                  <th style="width:70px;text-align:center;">게시여부</th>
+                  <th style="width:70px;text-align:right;">조회수</th>
+                </tr>
+              </thead>
+              <tbody id="nt-tbody"></tbody>
+            </table>
+          </div>
+        </div>`;
+
+      const updateTable = window.ntUpdateTable = () => {
+        const key = wrapper.querySelector('#nt-key').value;
+        const kw = wrapper.querySelector('#nt-kw').value.toLowerCase().trim();
+        const postStatus = wrapper.querySelector('input[name="nt-post-status"]:checked').value;
+        const filtered = noticeList.filter(n => {
+          if (postStatus !== '전체' && n.postStatus !== postStatus) return false;
+          if (kw) {
+            if (key==='전체') return n.title.toLowerCase().includes(kw)||n.author.toLowerCase().includes(kw)||n.target.toLowerCase().includes(kw);
+            if (key==='제목') return n.title.toLowerCase().includes(kw);
+            if (key==='작성자') return n.author.toLowerCase().includes(kw);
+            if (key==='게시대상') return n.target.toLowerCase().includes(kw);
+          }
+          return true;
+        });
+        wrapper.querySelector('#nt-total').textContent = filtered.length;
+        const tbody = wrapper.querySelector('#nt-tbody');
+        tbody.innerHTML = filtered.map((n, i) => `<tr>
+          <td style="text-align:center;color:var(--text-muted);font-size:13px;">${i+1}</td>
+          <td style="text-align:center;"><span class="badge badge-secondary" style="font-size:11px;">${n.target}</span></td>
+          <td style="text-align:center;">${n.pinned==='Y'?'<span class="badge badge-warning" style="font-size:11px;">Y</span>':'—'}</td>
+          <td style="text-align:left;"><a href="#" style="color:var(--blue);text-decoration:none;font-weight:500;" onclick="event.preventDefault();ntOpenDetail(${n.id})">${n.title}</a></td>
+          <td style="font-size:13px;color:var(--text-muted);">${n.period}</td>
+          <td>${n.author}</td>
+          <td style="font-size:13px;color:var(--text-muted);">${n.regDate}</td>
+          <td style="text-align:center;">${n.postStatus==='게시'?'<span class="badge badge-success" style="font-size:11px;">게시</span>':'<span class="badge badge-secondary" style="font-size:11px;">미게시</span>'}</td>
+          <td style="text-align:right;font-size:13px;color:var(--text-muted);">${n.views.toLocaleString()}</td>
+        </tr>`).join('');
+      };
+
+      window.ntOpenRegister = () => { noticeEditMode = false; selectedNoticeId = null; selectMenu('common-8','공지사항 등록'); };
+
+      setTimeout(() => {
+        const presetBtns = wrapper.querySelectorAll('.date-preset-btn');
+        presetBtns.forEach(btn => {
+          btn.onclick = () => {
+            presetBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const preset = btn.getAttribute('data-preset');
+            const e = new Date(), s = new Date();
+            if (preset==='1m') s.setMonth(e.getMonth()-1);
+            else if (preset==='3m') s.setMonth(e.getMonth()-3);
+            else if (preset==='6m') s.setMonth(e.getMonth()-6);
+            else s.setFullYear(e.getFullYear()-1);
+            const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            wrapper.querySelector('#nt-start').value = fmt(s);
+            wrapper.querySelector('#nt-end').value = fmt(e);
+          };
+        });
+        wrapper.querySelector('#nt-btn-search').onclick = () => updateTable();
+        wrapper.querySelector('#nt-btn-reset').onclick = () => {
+          wrapper.querySelector('#nt-kw').value = '';
+          wrapper.querySelector('input[name="nt-post-status"][value="전체"]').checked = true;
+          updateTable();
+        };
+        updateTable();
+        // 클린업
+        const obs = new MutationObserver(() => {
+          if (!document.body.contains(wrapper)) {
+            if (document.body.contains(detailModal)) document.body.removeChild(detailModal);
+            if (document.body.contains(detailOverlay)) document.body.removeChild(detailOverlay);
+            obs.disconnect();
+          }
+        });
+        if (wrapper.parentNode) obs.observe(wrapper.parentNode, {childList:true});
+      }, 50);
+
+      return wrapper;
+    }
+
+    /* ── 공지사항 관리 - 등록/수정 ── */
+    function getNoticeRegisterTemplate() {
+      const n = noticeEditMode && selectedNoticeId ? noticeList.find(x => x.id===selectedNoticeId) : null;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+        <div class="card">
+          <div class="card-title">${n ? '공지사항 수정' : '공지사항 등록'}</div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">게시대상 <span class="required">*</span></label>
+              <div class="radio-group" style="display:flex;gap:20px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="ntr-target" value="전체"${!n||n.target==='전체'?' checked':''}> 전체</label>
+                <label class="radio-item"><input type="radio" name="ntr-target" value="내부"${n&&n.target==='내부'?' checked':''}> 내부</label>
+                <label class="radio-item"><input type="radio" name="ntr-target" value="외부"${n&&n.target==='외부'?' checked':''}> 외부</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">우선노출 <span class="required">*</span></label>
+              <div class="radio-group" style="display:flex;gap:20px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="ntr-pinned" value="Y"${n&&n.pinned==='Y'?' checked':''}> 예</label>
+                <label class="radio-item"><input type="radio" name="ntr-pinned" value="N"${!n||n.pinned==='N'?' checked':''}> 아니오</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">제목 <span class="required">*</span></label>
+              <input type="text" id="ntr-title" class="form-control" placeholder="제목을 입력해주세요." value="${n?n.title:''}">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">게시기간 <span class="required">*</span></label>
+              <div style="display:flex;gap:12px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="ntr-period-type" value="무관"${!n||n.period==='무관'?' checked':''} onchange="toggleNtPeriod()"> 무관</label>
+                <label class="radio-item"><input type="radio" name="ntr-period-type" value="기간설정"${n&&n.period!=='무관'?' checked':''} onchange="toggleNtPeriod()"> 기간 설정</label>
+                <div id="ntr-period-range" style="${n&&n.period!=='무관'?'':'display:none;'}display:flex;align-items:center;gap:8px;">
+                  <input type="date" id="ntr-period-start" class="form-control" style="width:150px;" value="${n&&n.period!=='무관'?n.period.split('~')[0]:''}">
+                  <span style="color:var(--text-muted);">~</span>
+                  <input type="date" id="ntr-period-end" class="form-control" style="width:150px;" value="${n&&n.period!=='무관'?n.period.split('~')[1]||'':''}">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">게시여부 <span class="required">*</span></label>
+              <div class="radio-group" style="display:flex;gap:20px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="ntr-post-status" value="게시"${!n||n.postStatus==='게시'?' checked':''}> 게시</label>
+                <label class="radio-item"><input type="radio" name="ntr-post-status" value="미게시"${n&&n.postStatus==='미게시'?' checked':''}> 미게시</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">작성자</label>
+              <input type="text" class="form-control" value="${n?n.author:'이희성'}" readonly style="width:200px;background:var(--bg);color:var(--text-muted);cursor:not-allowed;">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">내용</label>
+              <textarea id="ntr-content" class="form-control" style="min-height:200px;resize:vertical;" placeholder="공지사항 내용을 입력해주세요.">${n?n.content:''}</textarea>
+            </div>
+            ${n&&n.files&&n.files.length>0?`
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">등록된 첨부파일</label>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                ${n.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <span style="flex:1;">${f}</span>
+                  <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.preventDefault();">삭제</button>
+                </div>`).join('')}
+              </div>
+            </div>` : ''}
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">첨부파일 추가</label>
+              <input type="file" class="form-control" multiple style="height:auto;padding:8px;" accept=".pdf,.hwp,.doc,.docx,.xls,.xlsx,.jpg,.png">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-outline" onclick="selectMenu('common-8','공지사항 목록')">목록</button>
+            <button class="btn btn-primary" id="ntr-btn-save">${n ? '수정' : '등록'}</button>
+          </div>
+        </div>`;
+
+      window.toggleNtPeriod = () => {
+        const isRange = wrapper.querySelector('input[name="ntr-period-type"]:checked')?.value === '기간설정';
+        const el = wrapper.querySelector('#ntr-period-range');
+        if (el) el.style.display = isRange ? 'flex' : 'none';
+      };
+
+      setTimeout(() => {
+        wrapper.querySelector('#ntr-btn-save').onclick = () => {
+          const title = wrapper.querySelector('#ntr-title').value.trim();
+          if (!title) { alert('제목을 입력해주세요.'); return; }
+          const target = wrapper.querySelector('input[name="ntr-target"]:checked').value;
+          const pinned = wrapper.querySelector('input[name="ntr-pinned"]:checked').value;
+          const periodType = wrapper.querySelector('input[name="ntr-period-type"]:checked').value;
+          let period = '무관';
+          if (periodType==='기간설정') {
+            const ps = wrapper.querySelector('#ntr-period-start').value;
+            const pe = wrapper.querySelector('#ntr-period-end').value;
+            period = ps&&pe ? `${ps}~${pe}` : '무관';
+          }
+          const postStatus = wrapper.querySelector('input[name="ntr-post-status"]:checked').value;
+          const content = wrapper.querySelector('#ntr-content').value;
+          const now = new Date();
+          const fmtS = d => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+          if (n) {
+            const idx = noticeList.findIndex(x => x.id===n.id);
+            if (idx !== -1) noticeList[idx] = {...noticeList[idx], target, pinned, title, period, postStatus, content};
+            alert('수정되었습니다.');
+          } else {
+            noticeList.unshift({ id: Date.now(), target, pinned, title, period, author:'이희성', regDate:fmtS(now), postStatus, views:0, content, files:[] });
+            alert('등록되었습니다.');
+          }
+          noticeEditMode = false;
+          selectMenu('common-8','공지사항 목록');
+        };
+      }, 50);
+
+      return wrapper;
+    }
+
+    /* ── 자료실 관리 - 목록 ── */
+    function getResourceListTemplate() {
+      const wrapper = document.createElement('div');
+
+      // 상세보기 모달 생성 (동적)
+      const detailModal = document.createElement('div');
+      detailModal.id = 'res-detail-modal';
+      detailModal.className = 'manual-modal';
+      detailModal.style.width = '680px';
+      detailModal.style.maxWidth = '95vw';
+      detailModal.innerHTML = `
+        <div class="manual-modal-header" style="background-color:var(--navy);">
+          <h3>자료 상세</h3>
+          <button class="manual-modal-close" onclick="resCloseDetail()">×</button>
+        </div>
+        <div class="manual-modal-body" style="padding:20px;max-height:70vh;overflow-y:auto;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+            <div><span style="font-size:12px;color:var(--text-muted);">대상구분</span><div id="resd-target" style="font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">우선노출</span><div id="resd-pinned" style="font-weight:700;margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">게시여부</span><div id="resd-status" style="font-weight:700;margin-top:4px;"></div></div>
+            <div style="grid-column:1/-1;"><span style="font-size:12px;color:var(--text-muted);">제목</span><div id="resd-title" style="font-size:16px;font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">게시기간</span><div id="resd-period" style="margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">등록자</span><div id="resd-author" style="margin-top:4px;"></div></div>
+            <div><span style="font-size:12px;color:var(--text-muted);">다운로드 수</span><div id="resd-views" style="margin-top:4px;"></div></div>
+          </div>
+          <div id="resd-files-wrap" style="margin-bottom:16px;">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">첨부파일 (자료)</div>
+            <div id="resd-files" style="display:flex;flex-direction:column;gap:6px;"></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:14px;">
+            <button class="btn btn-outline" onclick="resCloseDetail()">목록</button>
+            <button class="btn btn-primary" onclick="resOpenEdit()">수정</button>
+            <button class="btn btn-outline" style="color:var(--red-dk);border-color:var(--red-md);" onclick="resDeleteFromDetail()">삭제</button>
+          </div>
+        </div>`;
+      document.body.appendChild(detailModal);
+
+      const detailOverlay = document.createElement('div');
+      detailOverlay.id = 'res-detail-overlay';
+      detailOverlay.className = 'manual-modal-overlay';
+      detailOverlay.onclick = () => resCloseDetail();
+      document.body.appendChild(detailOverlay);
+
+      window.resCloseDetail = () => {
+        detailModal.classList.remove('open');
+        detailOverlay.classList.remove('open');
+      };
+      window.resOpenDetail = (id) => {
+        const r = resourceList.find(x => x.id===id);
+        if (!r) return;
+        selectedResourceId = id;
+        r.views = (r.views||0) + 1;
+        document.getElementById('resd-target').textContent = r.target;
+        document.getElementById('resd-pinned').innerHTML = r.pinned==='Y'?`<span class="badge badge-warning" style="font-size:11px;">우선노출</span>`:'—';
+        document.getElementById('resd-status').innerHTML = r.postStatus==='게시'?`<span class="badge badge-success">게시</span>`:`<span class="badge badge-secondary">미게시</span>`;
+        document.getElementById('resd-title').textContent = r.title;
+        document.getElementById('resd-period').textContent = r.period;
+        document.getElementById('resd-author').textContent = r.author;
+        document.getElementById('resd-views').textContent = r.views.toLocaleString()+'회';
+        const fd = document.getElementById('resd-files');
+        fd.innerHTML = r.files && r.files.length > 0 ? r.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span style="flex:1;">${f}</span>
+          <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 미리봅니다: ${f}')">바로보기</button>
+          <button class="btn btn-primary" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 다운로드합니다: ${f}')">다운로드</button>
+        </div>`).join('') : `<div style="color:var(--text-muted);font-size:13px;padding:12px;">등록된 파일이 없습니다.</div>`;
+        resUpdateTable();
+        detailModal.classList.add('open');
+        detailOverlay.classList.add('open');
+      };
+      window.resOpenEdit = () => { resCloseDetail(); resourceEditMode = true; selectMenu('common-9','자료 등록'); };
+      window.resDeleteFromDetail = () => {
+        const r = resourceList.find(x => x.id===selectedResourceId);
+        if (!r) return;
+        if (!confirm(`"${r.title}"\n\n해당 자료를 삭제하시겠습니까?`)) return;
+        const idx = resourceList.findIndex(x => x.id===selectedResourceId);
+        if (idx !== -1) resourceList.splice(idx, 1);
+        resCloseDetail();
+        alert('삭제되었습니다.');
+        resUpdateTable();
+      };
+
+      wrapper.innerHTML = `
+        <div class="card search-card">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+            <div class="card-title" style="margin:0;">검색 조건</div>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;padding:3px 10px;">ERP 연동 필요</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">조회기간</label>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="date-presets" style="display:flex;gap:4px;margin-right:4px;">
+                  <button type="button" class="date-preset-btn" data-preset="1m">1개월</button>
+                  <button type="button" class="date-preset-btn" data-preset="3m">3개월</button>
+                  <button type="button" class="date-preset-btn active" data-preset="6m">6개월</button>
+                  <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
+                </div>
+                <input type="date" id="res-start" class="form-control" style="width:150px;" value="2026-01-01">
+                <span style="color:var(--text-muted);">~</span>
+                <input type="date" id="res-end" class="form-control" style="width:150px;" value="2026-06-30">
+              </div>
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">게시여부</label>
+              <div class="radio-group" style="display:flex;gap:16px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="res-post-status" value="전체" checked> 전체</label>
+                <label class="radio-item"><input type="radio" name="res-post-status" value="게시"> 게시</label>
+                <label class="radio-item"><input type="radio" name="res-post-status" value="미게시"> 미게시</label>
+              </div>
+            </div>
+            <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
+              <label style="width:130px;flex-shrink:0;font-weight:600;font-size:14px;color:var(--text-label);margin:0;">키워드 검색</label>
+              <div style="display:flex;gap:8px;width:500px;max-width:100%;">
+                <select id="res-key" class="form-control" style="width:130px;flex-shrink:0;">
+                  <option value="전체">전체</option>
+                  <option value="제목">제목</option>
+                  <option value="등록자">등록자</option>
+                  <option value="대상구분">대상구분</option>
+                </select>
+                <input type="text" id="res-kw" class="form-control" style="flex:1;" placeholder="검색어를 입력하세요.">
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-primary" id="res-btn-search">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg> 검색
+            </button>
+            <button class="btn btn-outline" id="res-btn-reset">초기화</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+            <div class="card-title" style="margin:0;">자료실 목록</div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <span style="font-size:13px;color:var(--text-muted);">전체 <strong id="res-total" style="color:var(--blue);">0</strong>건</span>
+              <button class="btn btn-primary" onclick="resOpenRegister()" style="height:32px;padding:0 14px;font-size:13px;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                등록
+              </button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px;text-align:center;">No</th>
+                  <th style="width:70px;text-align:center;">대상구분</th>
+                  <th style="width:70px;text-align:center;">우선노출</th>
+                  <th>제목</th>
+                  <th>게시기간</th>
+                  <th style="width:80px;">등록자</th>
+                  <th style="width:90px;">등록일</th>
+                  <th style="width:70px;text-align:center;">게시여부</th>
+                  <th style="width:70px;text-align:right;">다운로드</th>
+                </tr>
+              </thead>
+              <tbody id="res-tbody"></tbody>
+            </table>
+          </div>
+        </div>`;
+
+      const resUpdateTable = window.resUpdateTable = () => {
+        const key = wrapper.querySelector('#res-key').value;
+        const kw = wrapper.querySelector('#res-kw').value.toLowerCase().trim();
+        const postStatus = wrapper.querySelector('input[name="res-post-status"]:checked').value;
+        const filtered = resourceList.filter(r => {
+          if (postStatus !== '전체' && r.postStatus !== postStatus) return false;
+          if (kw) {
+            if (key==='전체') return r.title.toLowerCase().includes(kw)||r.author.toLowerCase().includes(kw)||r.target.toLowerCase().includes(kw);
+            if (key==='제목') return r.title.toLowerCase().includes(kw);
+            if (key==='등록자') return r.author.toLowerCase().includes(kw);
+            if (key==='대상구분') return r.target.toLowerCase().includes(kw);
+          }
+          return true;
+        });
+        wrapper.querySelector('#res-total').textContent = filtered.length;
+        wrapper.querySelector('#res-tbody').innerHTML = filtered.map((r, i) => `<tr>
+          <td style="text-align:center;color:var(--text-muted);font-size:13px;">${i+1}</td>
+          <td style="text-align:center;"><span class="badge badge-secondary" style="font-size:11px;">${r.target}</span></td>
+          <td style="text-align:center;">${r.pinned==='Y'?'<span class="badge badge-warning" style="font-size:11px;">Y</span>':'—'}</td>
+          <td style="text-align:left;"><a href="#" style="color:var(--blue);text-decoration:none;font-weight:500;" onclick="event.preventDefault();resOpenDetail(${r.id})">${r.title}</a></td>
+          <td style="font-size:13px;color:var(--text-muted);">${r.period}</td>
+          <td>${r.author}</td>
+          <td style="font-size:13px;color:var(--text-muted);">${r.regDate}</td>
+          <td style="text-align:center;">${r.postStatus==='게시'?'<span class="badge badge-success" style="font-size:11px;">게시</span>':'<span class="badge badge-secondary" style="font-size:11px;">미게시</span>'}</td>
+          <td style="text-align:right;font-size:13px;color:var(--text-muted);">${r.views.toLocaleString()}</td>
+        </tr>`).join('');
+      };
+
+      window.resOpenRegister = () => { resourceEditMode = false; selectedResourceId = null; selectMenu('common-9','자료 등록'); };
+
+      setTimeout(() => {
+        const presetBtns = wrapper.querySelectorAll('.date-preset-btn');
+        presetBtns.forEach(btn => {
+          btn.onclick = () => {
+            presetBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const preset = btn.getAttribute('data-preset');
+            const e = new Date(), s = new Date();
+            if (preset==='1m') s.setMonth(e.getMonth()-1);
+            else if (preset==='3m') s.setMonth(e.getMonth()-3);
+            else if (preset==='6m') s.setMonth(e.getMonth()-6);
+            else s.setFullYear(e.getFullYear()-1);
+            const fmt = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+            wrapper.querySelector('#res-start').value = fmt(s);
+            wrapper.querySelector('#res-end').value = fmt(e);
+          };
+        });
+        wrapper.querySelector('#res-btn-search').onclick = () => resUpdateTable();
+        wrapper.querySelector('#res-btn-reset').onclick = () => {
+          wrapper.querySelector('#res-kw').value = '';
+          wrapper.querySelector('input[name="res-post-status"][value="전체"]').checked = true;
+          resUpdateTable();
+        };
+        resUpdateTable();
+        const obs = new MutationObserver(() => {
+          if (!document.body.contains(wrapper)) {
+            if (document.body.contains(detailModal)) document.body.removeChild(detailModal);
+            if (document.body.contains(detailOverlay)) document.body.removeChild(detailOverlay);
+            obs.disconnect();
+          }
+        });
+        if (wrapper.parentNode) obs.observe(wrapper.parentNode, {childList:true});
+      }, 50);
+
+      return wrapper;
+    }
+
+    /* ── 자료실 관리 - 등록/수정 ── */
+    function getResourceRegisterTemplate() {
+      const r = resourceEditMode && selectedResourceId ? resourceList.find(x => x.id===selectedResourceId) : null;
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = `
+        <div class="card">
+          <div class="card-title">${r ? '자료 수정' : '자료 등록'}</div>
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">대상구분 <span class="required">*</span></label>
+              <div class="radio-group" style="display:flex;gap:20px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="resr-target" value="전체"${!r||r.target==='전체'?' checked':''}> 전체</label>
+                <label class="radio-item"><input type="radio" name="resr-target" value="내부"${r&&r.target==='내부'?' checked':''}> 내부</label>
+                <label class="radio-item"><input type="radio" name="resr-target" value="외부"${r&&r.target==='외부'?' checked':''}> 외부</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">우선노출 <span class="required">*</span></label>
+              <div class="radio-group" style="display:flex;gap:20px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="resr-pinned" value="Y"${r&&r.pinned==='Y'?' checked':''}> 예</label>
+                <label class="radio-item"><input type="radio" name="resr-pinned" value="N"${!r||r.pinned==='N'?' checked':''}> 아니오</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">제목 <span class="required">*</span></label>
+              <input type="text" id="resr-title" class="form-control" placeholder="제목을 입력해주세요. (예: HW_물품계약서)" value="${r?r.title:''}">
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">게시기간 <span class="required">*</span></label>
+              <div style="display:flex;gap:12px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="resr-period-type" value="무관"${!r||r.period==='무관'?' checked':''} onchange="toggleResPeriod()"> 무관</label>
+                <label class="radio-item"><input type="radio" name="resr-period-type" value="기간설정"${r&&r.period!=='무관'?' checked':''} onchange="toggleResPeriod()"> 기간 설정</label>
+                <div id="resr-period-range" style="${r&&r.period!=='무관'?'':'display:none;'}display:flex;align-items:center;gap:8px;">
+                  <input type="date" id="resr-period-start" class="form-control" style="width:150px;" value="${r&&r.period!=='무관'?r.period.split('~')[0]:''}">
+                  <span style="color:var(--text-muted);">~</span>
+                  <input type="date" id="resr-period-end" class="form-control" style="width:150px;" value="${r&&r.period!=='무관'?r.period.split('~')[1]||'':''}">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">게시여부 <span class="required">*</span></label>
+              <div class="radio-group" style="display:flex;gap:20px;height:38px;align-items:center;">
+                <label class="radio-item"><input type="radio" name="resr-post-status" value="게시"${!r||r.postStatus==='게시'?' checked':''}> 게시</label>
+                <label class="radio-item"><input type="radio" name="resr-post-status" value="미게시"${r&&r.postStatus==='미게시'?' checked':''}> 미게시</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">등록자</label>
+              <input type="text" class="form-control" value="${r?r.author:'이희성'}" readonly style="width:200px;background:var(--bg);color:var(--text-muted);cursor:not-allowed;">
+            </div>
+            ${r&&r.files&&r.files.length>0?`
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">등록된 첨부파일</label>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                ${r.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                  <span style="flex:1;">${f}</span>
+                  <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.preventDefault();">삭제</button>
+                </div>`).join('')}
+              </div>
+            </div>` : ''}
+            <div class="form-group">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">첨부파일 추가 <span class="required">*</span></label>
+              <input type="file" id="resr-files" class="form-control" multiple style="height:auto;padding:8px;" accept=".pdf,.hwp,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+              <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">지원 형식: PDF, HWP, Word, Excel, PowerPoint (최대 50MB)</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-outline" onclick="selectMenu('common-9','자료실 목록')">목록</button>
+            <button class="btn btn-primary" id="resr-btn-save">${r ? '수정' : '등록'}</button>
+          </div>
+        </div>`;
+
+      window.toggleResPeriod = () => {
+        const isRange = wrapper.querySelector('input[name="resr-period-type"]:checked')?.value === '기간설정';
+        const el = wrapper.querySelector('#resr-period-range');
+        if (el) el.style.display = isRange ? 'flex' : 'none';
+      };
+
+      setTimeout(() => {
+        wrapper.querySelector('#resr-btn-save').onclick = () => {
+          const title = wrapper.querySelector('#resr-title').value.trim();
+          if (!title) { alert('제목을 입력해주세요.'); return; }
+          const target = wrapper.querySelector('input[name="resr-target"]:checked').value;
+          const pinned = wrapper.querySelector('input[name="resr-pinned"]:checked').value;
+          const periodType = wrapper.querySelector('input[name="resr-period-type"]:checked').value;
+          let period = '무관';
+          if (periodType==='기간설정') {
+            const ps = wrapper.querySelector('#resr-period-start').value;
+            const pe = wrapper.querySelector('#resr-period-end').value;
+            period = ps&&pe ? `${ps}~${pe}` : '무관';
+          }
+          const postStatus = wrapper.querySelector('input[name="resr-post-status"]:checked').value;
+          const now = new Date();
+          const fmtS = d => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+          const files = [];
+          const fileInput = wrapper.querySelector('#resr-files');
+          if (fileInput && fileInput.files.length > 0) {
+            Array.from(fileInput.files).forEach(f => files.push(f.name));
+          }
+          if (r) {
+            const idx = resourceList.findIndex(x => x.id===r.id);
+            if (idx !== -1) resourceList[idx] = {...resourceList[idx], target, pinned, title, period, postStatus, files: files.length>0?files:r.files};
+            alert('수정되었습니다.');
+          } else {
+            resourceList.unshift({ id: Date.now(), target, pinned, title, period, author:'이희성', regDate:fmtS(now), postStatus, views:0, content:'', files });
+            alert('등록되었습니다.');
+          }
+          resourceEditMode = false;
+          selectMenu('common-9','자료실 목록');
+        };
+      }, 50);
+
+      return wrapper;
+    }
+
   </script>
 </body>
 </html>
