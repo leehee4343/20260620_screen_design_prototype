@@ -1,4 +1,4 @@
-# 프로토타입 & 프로그램 표준 디자인 시스템
+﻿# 프로토타입 & 프로그램 표준 디자인 시스템
 
 > **용도**: 앞으로 제작하는 모든 프로토타입·프로그램에 적용할 디자인/UI/UX 가이드.  
 > **기반**: KEPCO ES 사업관리시스템(PMS) 화면 설계 시안 C  
@@ -110,8 +110,13 @@ button, input, select, textarea { font-family: var(--font-ui); }
 | 소형 라벨 | 13px | 600 | `--text-label` |
 | 배지/버튼 | 13px | 500–700 | — |
 | 메타 정보 | 13px | 400 | `--text-muted` |
+| 보조 주석 (최소) | **13px** | 400 | `--text-muted` |
 | KPI 숫자 | 28px | 900 | `--navy` |
 | 로그인 메인 카피 | 36px | 800 | `--navy` |
+
+> ⚠️ **최소 폰트 기준: 13px**
+> 이 프로젝트의 모든 UI 텍스트는 `13px` 미만을 절대 사용하지 않는다.
+> `12px`, `11px`, `10px` 등 13px 미만 값은 금지. 가장 작은 보조 주석도 `13px`로 작성한다.
 
 ### 한국어 최적화
 
@@ -241,11 +246,42 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
 ### 버튼
 
+> ⚠️ **버튼 높이 규칙**
+> 1. 모든 버튼의 `height`는 **28px 미만 금지**.
+> 2. **같은 행에 나란히 배치된 버튼은 반드시 동일한 height를 사용한다.** 역할·색상·중요도가 달라도 높이는 동일해야 정렬이 유지된다.
+>
+> | 용도 | height | padding | font-size |
+> |------|--------|---------|-----------|
+> | 기본 버튼 (폼 제출 등) | 38px | `0 18px` | 13px |
+> | 툴바 소형 버튼 (카드 헤더·테이블 위 행) | **32px** | `0 12px` | 13px |
+> | 주요 액션 툴바 버튼 (accent/primary, 텍스트 길 때) | **32px** | `0 14px` | 13px |
+> | 테이블 내 소형 버튼 (최소) | **28px** | `0 8px` | 13px |
+>
+> **툴바 행 버튼 예시** — 같은 행이면 모두 `height:32px` 통일:
+> ```html
+> <!-- ✅ 올바른 예: 같은 행 버튼 모두 height:32px -->
+> <div style="display:flex; gap:8px;">
+>   <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;">삭제</button>
+>   <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;">엑셀 다운로드</button>
+>   <button class="btn btn-accent"  style="height:32px; padding:0 14px; font-size:13px;">그룹 추가하기</button>
+> </div>
+>
+> <!-- ❌ 금지: height 혼재 -->
+> <div style="display:flex; gap:8px;">
+>   <button class="btn btn-outline">삭제</button>                              <!-- 38px 기본 -->
+>   <button class="btn btn-outline" style="height:32px;">엑셀 다운로드</button> <!-- 32px -->
+>   <button class="btn btn-accent">그룹 추가하기</button>                       <!-- 38px 기본 -->
+> </div>
+> ```
+
 ```html
 <button class="btn btn-primary">조회</button>
 <button class="btn btn-accent">저장</button>
 <button class="btn btn-secondary">내보내기</button>
 <button class="btn btn-outline">취소</button>
+
+<!-- 테이블 내 소형 버튼 (최소 사이즈) -->
+<button class="btn btn-outline" style="height:28px; padding:0 8px; font-size:13px;">상세보기</button>
 ```
 
 ```css
@@ -303,6 +339,36 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 .badge-danger    { background-color: var(--red-lt);   color: var(--red-dk); }
 .badge-secondary { background-color: #f1f5f9;         color: #64748b; }
 ```
+
+#### 테이블 상태 배지 (`badge-status-*`)
+
+**테이블 `<td>` 내 상태 표시에는 반드시 `badge-status-*` 변형을 사용한다.**
+배경색으로 상태를 구분하되, 텍스트 색상은 `var(--text)` (#2d3748) 고정.
+
+```html
+<!-- ✅ 테이블 상태 배지 올바른 사용 -->
+<span class="badge badge-status-success">사용</span>
+<span class="badge badge-status-warning">검토중</span>
+<span class="badge badge-status-danger">중지</span>
+<span class="badge badge-status-secondary">미게시</span>
+```
+
+```css
+/* 복합 선택자(명시도 0,2,0)로 .badge(0,1,0)의 font-weight:500을 항상 덮어씌움 */
+.badge.badge-status-success   { background-color: var(--green-lt); color: var(--text); font-weight: 400; }
+.badge.badge-status-warning   { background-color: var(--amber-lt); color: var(--text); font-weight: 400; }
+.badge.badge-status-danger    { background-color: var(--red-lt);   color: var(--text); font-weight: 400; }
+.badge.badge-status-secondary { background-color: #f1f5f9;         color: var(--text); font-weight: 400; }
+```
+
+| 클래스 | 배경색 | 텍스트 | 사용 예 |
+|---|---|---|---|
+| `badge-status-success` | 연초록 | `var(--text)` | 사용, 게시, 정상, 접수완료, 진행중 |
+| `badge-status-warning` | 연노랑 | `var(--text)` | 검토중, 완료예정, 진행중, 우선노출 |
+| `badge-status-danger`  | 연빨강 | `var(--text)` | 중지, 폐업, 보완요청 |
+| `badge-status-secondary` | 연회색 | `var(--text)` | 미게시, 대기, 준비중 |
+
+> **주의**: `badge-success/warning/danger/secondary` (색상 텍스트 버전)는 통계 카드 상단의 요약 레이블 등 테이블 외부의 일반 배지에만 사용한다.
 
 ---
 
@@ -423,27 +489,62 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
 ---
 
-### 페이지네이션
+### 게시물 수 표시 + 페이지네이션 (표준 패턴)
+
+모든 목록 화면의 테이블 상단/하단은 **아래 구조를 반드시 따른다.**
+
+| 위치 | 내용 | 규칙 |
+|------|------|------|
+| 테이블 **상단 왼쪽** | 전체 건수 + 현재 페이지 | `<strong>`으로 숫자 강조, 툴바 버튼과 같은 flex 행에 배치 |
+| 테이블 **하단 가운데** | 페이지 버튼들 | `.table-footer` 3열 그리드(빈칸 \| 페이징 \| 빈칸)로 가운데 정렬 |
 
 ```html
-<div class="table-footer">
-  <span>총 142건</span>
-  <div class="pagination">
-    <button class="page-btn">«</button>
-    <button class="page-btn">‹</button>
-    <button class="page-btn active">1</button>
-    <button class="page-btn">2</button>
-    <button class="page-btn">▶</button>
-    <button class="page-btn">»</button>
+<!-- ✅ 표준 패턴 — 툴바 행: 게시물 수(왼쪽) + 버튼(오른쪽) -->
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
+  <div style="font-size:13px; color:var(--text-muted);">
+    전체 <strong id="XXX-total" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp;
+    현재 <strong id="XXX-current-page" style="color:var(--text);">1/1</strong> 페이지
+  </div>
+  <div style="display:flex; gap:8px;">
+    <!-- 툴바 버튼들 -->
+  </div>
+</div>
+
+<!-- 테이블 본문 -->
+<div class="table-container">...</div>
+
+<!-- ✅ 표준 footer — 페이징 가운데 정렬 -->
+<div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;">
+  <div></div>
+  <div class="pagination" id="XXX-pagination"></div>
+  <div></div>
+</div>
+```
+
+> **주의**: `.table-footer`는 `display:flex; justify-content:space-between` 레이아웃이므로
+> 반드시 `<div></div>` 빈 칸 2개를 포함해야 페이징이 가운데에 정렬된다.
+> `<div class="pagination">` 하나만 넣으면 왼쪽 정렬됨 — **금지**.
+
+```html
+<!-- ❌ 금지 — 빈 칸 없는 단독 pagination -->
+<div class="table-footer"><div class="pagination" id="..."></div></div>
+
+<!-- ❌ 금지 — 건수를 오른쪽 버튼 그룹에 포함 -->
+<div style="display:flex; ...">
+  <div class="card-title">목록</div>
+  <div style="display:flex; gap:8px;">
+    <span>전체 N건</span>  <!-- count가 오른쪽에 있음 -->
+    <button>...</button>
   </div>
 </div>
 ```
 
 ```css
 .table-footer {
-  display: flex; justify-content: space-between; align-items: center;
-  padding-top: 14px; font-size: 13px; color: var(--text-muted);
-  flex-wrap: wrap; gap: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 14px;
 }
 .pagination { display: flex; gap: 4px; }
 .page-btn {
@@ -608,50 +709,101 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
 ---
 
+### 패널 섹션 헤더
+
+코드관리의 대분류/중분류/소분류처럼 패널이나 컬럼을 구분하는 **섹션 타이틀 헤더**에 적용하는 규칙.
+
+> ⚠️ **핵심 원칙**: 섹션 헤더는 아래 테이블 헤더(`#f1f5f9`)·카드 배경(흰색)과 명확히 구분되어야 한다.
+> 밝은 계열 배경(`var(--sidebar-bg)`, `var(--bg2)`, `#eef1f6` 등)은 테이블 헤더와 색차가 없어 **사용 금지**.
+> 반드시 **어두운 배경 + 흰 텍스트** 조합으로 시각적 계층을 만든다.
+
+```html
+<!-- ✅ 올바른 패널 섹션 헤더 -->
+<div style="display:flex; align-items:center; justify-content:space-between;
+            padding:10px 12px;
+            background:var(--navy); border-bottom:1px solid rgba(255,255,255,0.12);
+            font-size:13px; font-weight:600; color:#ffffff;">
+  <span>대분류</span>
+  <span class="badge" style="background:rgba(255,255,255,0.18); color:#fff; font-size:13px; font-weight:400;">15건</span>
+</div>
+
+<!-- ❌ 금지 — 밝은 배경으로는 테이블 헤더와 구분 불가 -->
+<div style="background:var(--sidebar-bg); color:var(--navy); ...">대분류</div>
+<div style="background:var(--bg2); color:var(--navy); ...">대분류</div>
+```
+
+| 속성 | 값 |
+|---|---|
+| 배경색 | `var(--navy)` (`#0F3460`) |
+| 텍스트 색 | `#ffffff` |
+| 폰트 크기 | `13px` |
+| 폰트 굵기 | `600` |
+| 패딩 | `10px 12px` |
+| 하단 구분선 | `1px solid rgba(255,255,255,0.12)` |
+| 내부 배지 (건수 표시) | `background:rgba(255,255,255,0.18); color:#fff; font-weight:400;` |
+
+---
+
 ## 5. 폼 패턴
 
 ### 검색 폼
 
+> ⚠️ **규칙: 검색 조건은 반드시 1개 조건당 1줄(행)로 세로 나열한다.**
+> 한 행에 검색 조건을 2개 이상 나란히 배치하는 다열 그리드는 **절대 사용하지 않는다.**
+> `.form-row`, `.search-grid` 등 `grid-template-columns: repeat(auto-fit, ...)` 방식의
+> 다열 레이아웃 클래스는 검색 영역에 **금지**되며, 프로젝트 CSS에서도 제거되었다(재도입 금지).
+>
+> **행 구조**: `<label>`은 고정 너비(기본 `130px`, 좁은 팝업 등은 `90px`) + `flex-shrink:0`,
+> 나머지 컨트롤 영역은 같은 행에서 오른쪽으로 이어진다. 여러 화면(공통관리 전체, 통계 등)에서
+> 이미 이 패턴을 따르고 있으며, 신규 화면도 반드시 이 구조를 그대로 사용한다.
+
 ```html
-<div class="card">
-  <div class="card-title">조회 조건</div>
-  <div class="search-grid">
-    <div class="form-group">
-      <label>사업명</label>
-      <input class="form-control" type="text" placeholder="사업명 입력">
-    </div>
-    <div class="form-group">
-      <label>접수 기간</label>
-      <div style="display:flex; gap:6px; align-items:center;">
-        <input class="form-control" type="date" style="flex:1">
+<div class="card search-card">
+  <div class="card-title">검색 조건</div>
+  <div style="display:flex; flex-direction:column; gap:12px;">
+    <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+      <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">접수 기간</label>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div class="date-presets" style="display:flex; gap:4px; margin-right:4px;">
+          <button type="button" class="date-preset-btn">오늘</button>
+          <button type="button" class="date-preset-btn">1주</button>
+          <button type="button" class="date-preset-btn">1개월</button>
+          <button type="button" class="date-preset-btn active">3개월</button>
+        </div>
+        <input class="form-control" type="date" style="width:150px;">
         <span style="color:var(--text-muted)">~</span>
-        <input class="form-control" type="date" style="flex:1">
-      </div>
-      <div style="display:flex; gap:4px; margin-top:4px;">
-        <button class="date-preset-btn">오늘</button>
-        <button class="date-preset-btn">1주</button>
-        <button class="date-preset-btn">1개월</button>
-        <button class="date-preset-btn active">3개월</button>
+        <input class="form-control" type="date" style="width:150px;">
       </div>
     </div>
-    <div class="form-group">
-      <label>상태</label>
-      <select class="form-control">
+    <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+      <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">상태</label>
+      <select class="form-control" style="width:220px;">
         <option value="">전체</option>
         <option>접수</option>
         <option>검토중</option>
       </select>
     </div>
+    <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+      <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">사업명</label>
+      <input class="form-control" type="text" style="width:500px; max-width:100%;" placeholder="사업명 입력">
+    </div>
   </div>
-  <div style="display:flex; gap:8px; margin-top:16px; justify-content:flex-end;">
+  <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px; border-top:1px solid var(--border); padding-top:16px;">
+    <button class="btn btn-primary">🔍 검색</button>
     <button class="btn btn-outline">초기화</button>
-    <button class="btn btn-primary">🔍 조회</button>
   </div>
 </div>
 ```
 
+```html
+<!-- ❌ 금지 — 한 행에 조건 2개 이상(다열 그리드) -->
+<div class="form-row">
+  <div class="form-group"><label>접수 기간</label>...</div>
+  <div class="form-group"><label>상태</label>...</div>
+</div>
+```
+
 ```css
-.search-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; align-items: end; }
 .form-group  { display: flex; flex-direction: column; gap: 6px; }
 .form-group label { font-weight: 600; font-size: 13px; color: var(--text-label); }
 .form-group label .required { color: var(--red); margin-left: 2px; }
@@ -678,10 +830,13 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 
 ### 등록/수정 폼
 
+> **규칙**: 등록·수정·상세 화면의 입력 필드는 **반드시 1열** 세로 나열로 구성한다.
+> `form-row`(2열 그리드)나 `grid-template-columns: 1fr 1fr` 사용 금지.
+
 ```html
 <div class="card">
   <div class="card-title">기본 정보</div>
-  <div class="form-row">
+  <div style="display:flex; flex-direction:column; gap:16px;">
     <div class="form-group">
       <label>사업명 <span class="required">*</span></label>
       <input class="form-control" type="text">
@@ -694,7 +849,7 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
       </div>
     </div>
   </div>
-  <div style="display:flex; gap:8px; justify-content:flex-end;">
+  <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
     <button class="btn btn-outline">취소</button>
     <button class="btn btn-accent">저장</button>
   </div>
@@ -702,7 +857,9 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 ```
 
 ```css
-.form-row   { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px; }
+/* 등록/수정 폼: 1열 세로 나열 (2열 금지) */
+.form-group  { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-weight: 600; font-size: 13px; color: var(--text-label); }
 .radio-group { display: flex; gap: 20px; height: 38px; align-items: center; }
 .radio-item  { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 13px; }
 .radio-item input { accent-color: var(--blue); width: 16px; height: 16px; }
@@ -745,6 +902,40 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 .data-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: var(--text); }
 .data-table tbody tr:hover { background-color: #f8faff; }
 ```
+
+> ⚠️ **테이블 텍스트 규칙 (반드시 준수)**
+>
+> | 항목 | 규칙 |
+> |---|---|
+> | 폰트 색상 | **`#2d3748` 통일** — `color:var(--text-muted)` 등 인라인 color 지정 금지 |
+> | 폰트 크기 | **13px 통일** — 인라인 `font-size` 지정 금지, CSS 상속으로 처리 |
+> | Bold | **금지** — `font-weight:500/700/bold`, `<strong>` 사용 불가. 배지 포함 모든 `<td>` 텍스트는 `font-weight:400` 고정 |
+> | 색상 링크 | **금지** — `<a style="color:var(--blue);">` 불가, 반드시 `style="color:inherit; text-decoration:none;"` |
+> | 상태 표시 | **`.badge-status-*` 컴포넌트만 허용** — `badge-success/warning/danger/secondary` 직접 사용 금지 |
+> | `<td>` 내 버튼 | **동일 규칙 적용** — `color:#2d3748; font-size:13px; font-weight:400;` |
+> | 선택된 행 강조 | **`<tr>` 배경색만 허용** — `<td>` 텍스트에 `font-weight` 또는 `color` 인라인 변경 금지 |
+>
+> ```html
+> <!-- ✅ 올바른 예 -->
+> <td>텍스트</td>
+> <td style="text-align:center;"><span class="badge badge-status-success">완료</span></td>
+> <td><a href="#" style="color:inherit; text-decoration:none;" onclick="...">제목</a></td>
+> <td><button class="btn btn-outline" style="height:28px; padding:0 8px; font-size:13px;">상세보기</button></td>
+>
+> <!-- ✅ 선택된 행 강조 — tr 배경색만 사용 -->
+> <tr style="${active ? 'background:var(--blue-lt);' : ''}">
+>   <td>${item.name}</td>  <!-- td 텍스트 스타일 변경 금지 -->
+> </tr>
+>
+> <!-- ❌ 금지 예 -->
+> <td style="color:var(--text-muted);">텍스트</td>
+> <td style="font-size:14px;">텍스트</td>
+> <td><a href="#" style="color:var(--blue);">제목</a></td>
+> <td><button style="font-size:14px; color:var(--red-dk);">삭제</button></td>
+> <td style="font-weight:700; color:var(--navy);">${item.name}</td>  <!-- 선택 강조에 td 스타일 금지 -->
+> ```
+>
+> CSS 안전망: `.data-table td { color: var(--text); }` `.data-table td .btn { color: var(--text); font-size: 13px; font-weight: 400; }`
 
 ---
 
@@ -844,7 +1035,7 @@ body { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
   position: absolute;
   background: var(--navy); color: #ffffff;
   padding: 6px 12px; border-radius: 4px;
-  font-size: 12px; font-weight: 700;
+  font-size: 13px; font-weight: 700;
   box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   pointer-events: none; display: none; z-index: 1000;
 }

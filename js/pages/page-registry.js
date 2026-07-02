@@ -12,18 +12,14 @@
       },
       common: {
         'common-1::관리자 목록': getAdminListTemplate,
-        'common-2::검색/조회': getAuthGroupListTemplate,
-        'common-2::권한그룹 추가하기': getAuthGroupSettingTemplate,
+        'common-2::권한그룹 및 권한 관리': getAuthGroupManageTemplate,
         'common-3::IP 목록': getAccessIpListTemplate,
         'common-4::코드 목록': getCodeListTemplate,
         'common-5::로그인 현황': getLoginStatusTemplate,
         'common-6::메뉴별 접속현황': getMenuAccessStatusTemplate,
-        'common-7::협력업체 목록': getPartnerListTemplate,
-        'common-7::협력업체 상세': getPartnerDetailTemplate,
-        'common-8::공지사항 목록': getNoticeListTemplate,
-        'common-8::공지사항 등록': getNoticeRegisterTemplate,
-        'common-9::자료실 목록': getResourceListTemplate,
-        'common-9::자료 등록': getResourceRegisterTemplate
+        'common-7::협력업체 관리': getPartnerManageTemplate,
+        'common-8::공지사항 관리': getNoticeManageTemplate,
+        'common-9::자료실 관리': getResourceManageTemplate
       }
     };
 
@@ -63,33 +59,51 @@
       wrapper.innerHTML = `
         <div class="card search-card" style="margin-bottom:16px;">
           <div class="card-title">검색 조건</div>
-          <div class="form-row">
-            <div class="form-group"><label>프로젝트 기간</label><div style="display:flex; align-items:center; gap:8px;"><input id="project-from" class="form-control" type="date"><span style="color:var(--text-muted);">~</span><input id="project-to" class="form-control" type="date"></div></div>
-            <div class="form-group"><label>진행상태</label><select id="project-status" class="form-control"><option value="전체">전체</option><option>준비중</option><option>진행중</option><option>완료예정</option><option>완료</option></select></div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">프로젝트 기간</label>
+              <div style="display:flex; align-items:center; gap:8px;"><input id="project-from" class="form-control" type="date"><span style="">~</span><input id="project-to" class="form-control" type="date"></div>
+            </div>
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">진행상태</label>
+              <select id="project-status" class="form-control" style="width:220px;"><option value="전체">전체</option><option>준비중</option><option>진행중</option><option>완료예정</option><option>완료</option></select>
+            </div>
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">사업구분</label>
+              <select id="project-type" class="form-control" style="width:220px;"><option value="전체">전체</option><option>ESCO</option><option>시설개선</option><option>신재생</option></select>
+            </div>
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">검색어</label>
+              <div style="display:flex; gap:8px; width:500px; max-width:100%;"><select id="project-key" class="form-control" style="width:130px; flex:0 0 auto;"><option value="all">전체</option><option value="name">프로젝트명</option><option value="customer">고객사명</option><option value="manager">담당자</option></select><input id="project-word" class="form-control" style="flex:1;" placeholder="검색어를 입력하세요."></div>
+            </div>
           </div>
-          <div class="form-row">
-            <div class="form-group"><label>사업구분</label><select id="project-type" class="form-control"><option value="전체">전체</option><option>ESCO</option><option>시설개선</option><option>신재생</option></select></div>
-            <div class="form-group"><label>검색어</label><div style="display:flex; gap:8px;"><select id="project-key" class="form-control" style="width:130px; flex:0 0 auto;"><option value="all">전체</option><option value="name">프로젝트명</option><option value="customer">고객사명</option><option value="manager">담당자</option></select><input id="project-word" class="form-control" placeholder="검색어를 입력하세요."></div></div>
-          </div>
-          <div style="display:flex; justify-content:center; gap:8px; margin-top:18px;"><button class="btn btn-primary" id="project-search">${uiIcon('search')} 검색</button><button class="btn btn-outline" id="project-reset">초기화</button></div>
+          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px; border-top:1px solid var(--border); padding-top:16px;"><button class="btn btn-primary" id="project-search">${uiIcon('search')} 검색</button><button class="btn btn-outline" id="project-reset">초기화</button></div>
         </div>
         <div class="card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;"><div class="card-title" style="margin:0;">프로젝트 목록</div><button class="btn btn-outline" id="project-excel" style="height:32px; padding:0 12px; font-size:13px;">${uiIcon('download')} 다운로드(Excel)</button></div>
-          <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">전체 <strong id="project-total" style="color:var(--blue);">0</strong>건</div>
+          <div class="card-title">프로젝트 목록</div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;"><div style="font-size:13px; color:var(--text-muted);">전체 <strong id="project-total" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp; 현재 <strong id="project-current-page" style="color:var(--text);">1/1</strong> 페이지</div><button class="btn btn-outline" id="project-excel" style="height:32px; padding:0 12px; font-size:13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 엑셀 다운로드</button></div>
           <div class="table-container"><table class="data-table" style="min-width:2800px;"><thead><tr><th>순번</th><th>프로젝트 계약번호</th><th>등록일</th><th>계약체결일</th><th>사업명</th><th>계약형태</th><th>에너지사용자</th><th>소재지</th><th>진행상태</th><th>총사업금액</th><th>투자금액</th><th>투자적격지</th><th>투자적격률</th><th>공사단계</th><th>준공예정일</th><th>상환완료일</th><th>계약변경 건수</th><th>발주계약 건수</th><th>담당자</th><th>담당부서</th><th>대상설비</th><th>사업구분</th><th>상세</th></tr></thead><tbody id="project-table"></tbody></table></div>
+          <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;"><div></div><div class="pagination" id="project-pagination"></div><div></div></div>
         </div>`;
       setTimeout(() => {
-        const statusClass = status => ({ '준비중':'badge-secondary', '진행중':'badge-success', '완료예정':'badge-warning', '완료':'badge-secondary' }[status] || 'badge-secondary');
+        let projCurrentPage = 1;
+        const projPageSize = 10;
+        const statusClass = status => ({ '준비중':'badge-status-secondary', '진행중':'badge-status-success', '완료예정':'badge-status-warning', '완료':'badge-status-secondary' }[status] || 'badge-status-secondary');
         const render = () => {
           const from=wrapper.querySelector('#project-from').value, to=wrapper.querySelector('#project-to').value, status=wrapper.querySelector('#project-status').value, type=wrapper.querySelector('#project-type').value, key=wrapper.querySelector('#project-key').value, word=wrapper.querySelector('#project-word').value.trim().toLowerCase();
           const rows=projectList.filter(row => (!from || row.start >= from) && (!to || row.end <= to) && (status === '전체' || row.status === status) && (type === '전체' || row.type === type) && (!word || (key === 'all' ? [row.name,row.customer,row.manager,row.no].join(' ') : row[key]).toLowerCase().includes(word)));
+          const projTotalPages=Math.max(1,Math.ceil(rows.length/projPageSize)); if(projCurrentPage>projTotalPages) projCurrentPage=projTotalPages;
+          const projStart=(projCurrentPage-1)*projPageSize; const visible=rows.slice(projStart,projStart+projPageSize);
           wrapper.querySelector('#project-total').textContent=rows.length;
-          wrapper.querySelector('#project-table').innerHTML=rows.length ? rows.map((row,index) => { const stage=row.progress >= 70 ? '준공' : row.progress >= 30 ? '공사중' : '계약품의중'; const eligibility=row.progress >= 30 ? '적격' : '검토중'; return `<tr><td style="text-align:center; color:var(--text-muted);">${index + 1}</td><td>${row.no}</td><td>${row.start}</td><td>${row.start}</td><td style="font-weight:700; white-space:nowrap;">${row.name}</td><td>${row.type}</td><td>${row.customer}</td><td>경기도 안산시</td><td style="text-align:center;"><span class="badge ${statusClass(row.status)}">${row.status}</span></td><td style="text-align:right;">${row.amount}원</td><td style="text-align:right;">${row.amount}원</td><td style="text-align:center;">${eligibility}</td><td style="text-align:center;">100%</td><td style="text-align:center;">${stage}</td><td>${row.end}</td><td>${row.end}</td><td style="text-align:center;">0건</td><td style="text-align:center;">1건</td><td>${row.manager}</td><td>에너지사업부</td><td>고효율 설비</td><td>${row.type}</td><td style="text-align:center;"><button type="button" class="btn btn-outline project-detail" data-id="${row.id}" style="height:26px; padding:0 8px; font-size:12px;">상세보기</button></td></tr>`; }).join('') : '<tr><td colspan="23" style="padding:36px; color:var(--text-muted); text-align:center;">조회된 프로젝트가 없습니다.</td></tr>';
+          wrapper.querySelector('#project-current-page').textContent=`${projCurrentPage}/${projTotalPages}`;
+          wrapper.querySelector('#project-table').innerHTML=visible.length ? visible.map((row,index) => { const stage=row.progress >= 70 ? '준공' : row.progress >= 30 ? '공사중' : '계약품의중'; const eligibility=row.progress >= 30 ? '적격' : '검토중'; return `<tr><td style="text-align:center;">${projStart+index+1}</td><td>${row.no}</td><td>${row.start}</td><td>${row.start}</td><td style="white-space:nowrap;">${row.name}</td><td>${row.type}</td><td>${row.customer}</td><td>경기도 안산시</td><td style="text-align:center;"><span class="badge ${statusClass(row.status)}">${row.status}</span></td><td style="text-align:right;">${row.amount}원</td><td style="text-align:right;">${row.amount}원</td><td style="text-align:center;">${eligibility}</td><td style="text-align:center;">100%</td><td style="text-align:center;">${stage}</td><td>${row.end}</td><td>${row.end}</td><td style="text-align:center;">0건</td><td style="text-align:center;">1건</td><td>${row.manager}</td><td>에너지사업부</td><td>고효율 설비</td><td>${row.type}</td><td style="text-align:center;"><button type="button" class="btn btn-outline project-detail" data-id="${row.id}" style="height:28px; padding:0 8px; font-size:13px;">상세보기</button></td></tr>`; }).join('') : '<tr><td colspan="23" style="padding:36px; text-align:center;">조회된 프로젝트가 없습니다.</td></tr>';
+          wrapper.querySelector('#project-pagination').innerHTML=Array.from({length:projTotalPages},(_, i)=>`<button class="page-btn ${i+1===projCurrentPage?'active':''}" data-page="${i+1}">${i+1}</button>`).join('');
+          wrapper.querySelectorAll('#project-pagination .page-btn').forEach(b=>b.onclick=()=>{projCurrentPage=Number(b.dataset.page);render();});
           wrapper.querySelectorAll('.project-detail').forEach(button => button.onclick=()=>{ selectedProjectId=Number(button.dataset.id); selectMenu('proj-1','프로젝트 상세'); });
         };
-        wrapper.querySelector('#project-search').onclick=render;
-        wrapper.querySelector('#project-reset').onclick=()=>{ wrapper.querySelectorAll('input').forEach(input=>input.value=''); wrapper.querySelectorAll('select').forEach(select=>select.selectedIndex=0); render(); };
-        wrapper.querySelector('#project-excel').onclick=()=>alert('프로젝트 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.');
+        wrapper.querySelector('#project-search').onclick=()=>{projCurrentPage=1;render();};
+        wrapper.querySelector('#project-reset').onclick=()=>{ wrapper.querySelectorAll('input').forEach(input=>input.value=''); wrapper.querySelectorAll('select').forEach(select=>select.selectedIndex=0); projCurrentPage=1; render(); };
+        wrapper.querySelector('#project-excel').onclick=()=>alert('전체 조회 결과 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.');
         render();
       },0);
       return wrapper;
@@ -103,9 +117,12 @@
           <div class="card-title">프로젝트 상세</div>
           <p style="margin-top:-6px; margin-bottom:18px; font-size:13px; color:var(--text-muted);">계약 기본정보와 투자·공사 진행 현황을 확인하고 변경할 수 있습니다.</p>
           <div style="border-top:1px solid var(--border); padding-top:4px;"><div class="card-title" style="font-size:15px; margin:18px 0 14px;">프로젝트 기본정보</div>
-            <div class="form-row"><div class="form-group"><label>프로젝트명 <span class="required">*</span></label><input id="new-project-name" class="form-control" placeholder="프로젝트명을 입력하세요."></div><div class="form-group"><label>사업구분 <span class="required">*</span></label><select id="new-project-type" class="form-control"><option value="">선택하세요</option><option>ESCO</option><option>시설개선</option><option>신재생</option></select></div></div>
-            <div class="form-row"><div class="form-group"><label>고객사명 <span class="required">*</span></label><input id="new-project-customer" class="form-control" placeholder="고객사명 또는 기관명을 입력하세요."></div><div class="form-group"><label>프로젝트 담당자 <span class="required">*</span></label><select id="new-project-manager" class="form-control"><option value="">선택하세요</option><option>이희성</option><option>김철수</option><option>박영희</option></select></div></div>
-            <div class="form-row"><div class="form-group"><label>프로젝트 기간 <span class="required">*</span></label><div style="display:flex; align-items:center; gap:8px;"><input id="new-project-start" class="form-control" type="date"><span style="color:var(--text-muted);">~</span><input id="new-project-end" class="form-control" type="date"></div></div><div class="form-group"><label>계약금액</label><div style="display:flex; align-items:center; gap:8px;"><input id="new-project-amount" class="form-control" inputmode="numeric" placeholder="숫자만 입력하세요."><span style="color:var(--text-muted);">원</span></div></div></div>
+            <div class="form-group"><label>프로젝트명 <span class="required">*</span></label><input id="new-project-name" class="form-control" placeholder="프로젝트명을 입력하세요."></div>
+            <div class="form-group"><label>사업구분 <span class="required">*</span></label><select id="new-project-type" class="form-control"><option value="">선택하세요</option><option>ESCO</option><option>시설개선</option><option>신재생</option></select></div>
+            <div class="form-group"><label>고객사명 <span class="required">*</span></label><input id="new-project-customer" class="form-control" placeholder="고객사명 또는 기관명을 입력하세요."></div>
+            <div class="form-group"><label>프로젝트 담당자 <span class="required">*</span></label><select id="new-project-manager" class="form-control"><option value="">선택하세요</option><option>이희성</option><option>김철수</option><option>박영희</option></select></div>
+            <div class="form-group"><label>프로젝트 기간 <span class="required">*</span></label><div style="display:flex; align-items:center; gap:8px;"><input id="new-project-start" class="form-control" type="date"><span style="">~</span><input id="new-project-end" class="form-control" type="date"></div></div>
+            <div class="form-group"><label>계약금액</label><div style="display:flex; align-items:center; gap:8px;"><input id="new-project-amount" class="form-control" inputmode="numeric" placeholder="숫자만 입력하세요."><span style="">원</span></div></div>
           </div>
           <div style="border-top:1px solid var(--border); margin-top:8px; padding-top:4px;"><div class="card-title" style="font-size:15px; margin:18px 0 14px;">추진 계획</div><div class="form-group"><label>프로젝트 추진 내용</label><textarea id="new-project-note" class="form-control" rows="5" style="resize:vertical;" placeholder="주요 추진 일정, 관리 사항 등을 입력하세요."></textarea></div></div>
           <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:24px; padding-top:16px; border-top:1px solid var(--border);"><button type="button" class="btn btn-outline" id="new-project-cancel">목록</button><button type="button" class="btn btn-primary" id="new-project-save">${uiIcon('check')} 저장</button></div>
@@ -141,27 +158,30 @@
           <p style="margin-top:-6px; margin-bottom:18px; font-size:13px; color:var(--text-muted);">사업 기본정보와 담당 정보를 입력하여 신규 프로젝트 접수를 등록합니다. <span class="required">*</span> 표시는 필수 입력 항목입니다.</p>
           <div style="padding-top:4px; border-top:1px solid var(--border);">
             <div class="card-title" style="font-size:15px; margin:18px 0 14px;">기본 정보</div>
-            <div class="form-row">
-              <div class="form-group"><label>프로젝트명 <span class="required">*</span></label><input id="receipt-project-name" class="form-control" type="text" placeholder="프로젝트명을 입력하세요."></div>
-              <div class="form-group"><label>사업구분 <span class="required">*</span></label><select id="receipt-type" class="form-control"><option value="">선택하세요</option><option>ESCO</option><option>시설개선</option><option>신재생</option><option>기타</option></select></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>고객사명 <span class="required">*</span></label><input id="receipt-customer" class="form-control" type="text" placeholder="고객사명 또는 기관명을 입력하세요."></div>
-              <div class="form-group"><label>사업 담당자 <span class="required">*</span></label><select id="receipt-manager" class="form-control"><option value="">선택하세요</option><option>이희성</option><option>김철수</option><option>박영희</option></select></div>
-            </div>
-            <div class="form-row">
-              <div class="form-group"><label>예상 사업비</label><div style="display:flex; align-items:center; gap:8px;"><input id="receipt-budget" class="form-control" type="text" inputmode="numeric" placeholder="숫자만 입력하세요."><span style="white-space:nowrap; color:var(--text-muted);">원</span></div></div>
-              <div class="form-group"><label>예상 착수일</label><input id="receipt-start-date" class="form-control" type="date"></div>
-            </div>
+            <div class="form-group"><label>프로젝트명 <span class="required">*</span></label><input id="receipt-project-name" class="form-control" type="text" placeholder="프로젝트명을 입력하세요."></div>
+            <div class="form-group"><label>사업구분 <span class="required">*</span></label><select id="receipt-type" class="form-control"><option value="">선택하세요</option><option>ESCO</option><option>시설개선</option><option>신재생</option><option>기타</option></select></div>
+            <div class="form-group"><label>고객사명 <span class="required">*</span></label><input id="receipt-customer" class="form-control" type="text" placeholder="고객사명 또는 기관명을 입력하세요."></div>
+            <div class="form-group"><label>사업 담당자 <span class="required">*</span></label><select id="receipt-manager" class="form-control"><option value="">선택하세요</option><option>이희성</option><option>김철수</option><option>박영희</option></select></div>
+            <div class="form-group"><label>예상 사업비</label><div style="display:flex; align-items:center; gap:8px;"><input id="receipt-budget" class="form-control" type="text" inputmode="numeric" placeholder="숫자만 입력하세요."><span style="white-space:nowrap; color:var(--text-muted);">원</span></div></div>
+            <div class="form-group"><label>예상 착수일</label><input id="receipt-start-date" class="form-control" type="date"></div>
           </div>
           <div style="padding-top:4px; border-top:1px solid var(--border); margin-top:8px;">
             <div class="card-title" style="font-size:15px; margin:18px 0 14px;">접수 상세</div>
-            <div class="form-row">
-              <div class="form-group"><label>고객 담당자명</label><input id="receipt-contact-name" class="form-control" type="text" placeholder="담당자 성명을 입력하세요."></div>
-              <div class="form-group"><label>연락처</label><input id="receipt-contact-tel" class="form-control" type="tel" placeholder="예: 02-0000-0000"></div>
-            </div>
+            <div class="form-group"><label>고객 담당자명</label><input id="receipt-contact-name" class="form-control" type="text" placeholder="담당자 성명을 입력하세요."></div>
+            <div class="form-group"><label>연락처</label><input id="receipt-contact-tel" class="form-control" type="tel" placeholder="예: 02-0000-0000"></div>
             <div class="form-group"><label>사업 개요 및 요청사항</label><textarea id="receipt-description" class="form-control" rows="5" style="resize:vertical;" placeholder="사업 목적, 주요 설비, 요청사항 등을 입력하세요."></textarea></div>
-            <div class="form-group"><label>첨부파일</label><div style="display:flex; align-items:center; gap:10px;"><input id="receipt-file" type="file" style="max-width:360px;"><span style="font-size:12px; color:var(--text-muted);">사업 관련 제안서·현장자료 등을 첨부할 수 있습니다.</span></div></div>
+            <div class="form-group">
+              <label>첨부파일</label>
+              <div class="nt-dropzone" id="receipt-dropzone">
+                <div class="nt-dropzone-icon">
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div class="nt-dropzone-text">파일을 여기에 끌어다 놓거나 <span>클릭하여 선택</span>하세요.</div>
+                <div class="nt-dropzone-hint">사업 관련 제안서·현장자료 등 (PDF, HWP, DOC, DOCX, XLS, XLSX, JPG, PNG) &nbsp;·&nbsp; 파일당 최대 10MB</div>
+              </div>
+              <input type="file" id="receipt-file-input" multiple hidden accept=".pdf,.hwp,.doc,.docx,.xls,.xlsx,.jpg,.png">
+              <div id="receipt-file-list" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;"></div>
+            </div>
           </div>
           <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:24px; padding-top:16px; border-top:1px solid var(--border);">
             <button type="button" class="btn btn-outline" id="receipt-cancel">취소</button>
@@ -173,6 +193,41 @@
         wrapper.querySelector('#receipt-budget').addEventListener('input', event => {
           event.target.value = event.target.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         });
+
+        // ── 드래그앤드롭 파일 업로드 ──
+        const dropzone = wrapper.querySelector('#receipt-dropzone');
+        const fileInput = wrapper.querySelector('#receipt-file-input');
+        let receiptFiles = [];
+
+        const fmtSize = bytes => bytes == null ? '' : bytes < 1024*1024 ? `${(bytes/1024).toFixed(0)}KB` : `${(bytes/1024/1024).toFixed(1)}MB`;
+
+        const renderFileList = () => {
+          wrapper.querySelector('#receipt-file-list').innerHTML = receiptFiles.map((f, i) => `
+            <div class="nt-file-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="nt-file-item-name">${f.name}</span>
+              ${f.size!=null?`<span class="nt-file-item-size">${fmtSize(f.size)}</span>`:''}
+              <button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;flex-shrink:0;" onclick="receiptRemoveFile(${i})">삭제</button>
+            </div>`).join('');
+        };
+
+        dropzone.onclick = () => fileInput.click();
+        dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); };
+        dropzone.ondragleave = (e) => { if (!dropzone.contains(e.relatedTarget)) dropzone.classList.remove('drag-over'); };
+        dropzone.ondrop = (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('drag-over');
+          [...e.dataTransfer.files].forEach(f => { if (!receiptFiles.find(x => x.name===f.name)) receiptFiles.push({ name: f.name, size: f.size }); });
+          renderFileList();
+        };
+        fileInput.onchange = () => {
+          [...fileInput.files].forEach(f => { if (!receiptFiles.find(x => x.name===f.name)) receiptFiles.push({ name: f.name, size: f.size }); });
+          fileInput.value = '';
+          renderFileList();
+        };
+        window.receiptRemoveFile = (i) => { receiptFiles.splice(i, 1); renderFileList(); };
+        renderFileList();
+
         wrapper.querySelector('#receipt-cancel').onclick = () => selectMenu('rec-status', '사업접수현황 조회');
         wrapper.querySelector('#receipt-save').onclick = () => {
           const projectName = wrapper.querySelector('#receipt-project-name').value.trim();
@@ -187,7 +242,8 @@
           projectReceiptList.unshift({
             id: Date.now(), receiptNo: `PRJ-${today.slice(0, 4)}-${String(projectReceiptList.length + 1).padStart(4, '0')}`,
             projectName, customer, type, manager, receiptDate: today, status: '접수완료',
-            budget: wrapper.querySelector('#receipt-budget').value || '0'
+            budget: wrapper.querySelector('#receipt-budget').value || '0',
+            files: receiptFiles.map(f => f.name)
           });
           alert('신규 프로젝트가 접수되었습니다.');
           selectMenu('rec-status', '사업접수현황 조회');
@@ -202,28 +258,36 @@
       wrapper.innerHTML = `
         <div class="card search-card" style="margin-bottom:16px;">
           <div class="card-title">검색 조건</div>
-          <div class="search-flex" style="display:flex; flex-direction:column; gap:12px;">
-            <div class="form-row">
-              <div class="form-group"><label>접수기간</label><div style="display:flex; align-items:center; gap:8px;"><input id="receipt-search-from" class="form-control" type="date"><span style="color:var(--text-muted);">~</span><input id="receipt-search-to" class="form-control" type="date"></div></div>
-              <div class="form-group"><label>진행상태</label><select id="receipt-search-status" class="form-control"><option value="전체">전체</option><option>접수완료</option><option>검토중</option><option>보완요청</option><option>승인완료</option></select></div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">접수기간</label>
+              <div style="display:flex; align-items:center; gap:8px;"><input id="receipt-search-from" class="form-control" type="date"><span style="">~</span><input id="receipt-search-to" class="form-control" type="date"></div>
             </div>
-            <div class="form-row">
-              <div class="form-group"><label>사업구분</label><select id="receipt-search-type" class="form-control"><option value="전체">전체</option><option>ESCO</option><option>시설개선</option><option>신재생</option><option>기타</option></select></div>
-              <div class="form-group"><label>검색어</label><div style="display:flex; gap:8px;"><select id="receipt-search-key" class="form-control" style="width:130px; flex:0 0 auto;"><option value="전체">전체</option><option value="projectName">프로젝트명</option><option value="customer">고객사명</option><option value="manager">담당자</option></select><input id="receipt-search-word" class="form-control" type="text" placeholder="검색어를 입력하세요."></div></div>
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">진행상태</label>
+              <select id="receipt-search-status" class="form-control" style="width:220px;"><option value="전체">전체</option><option>접수완료</option><option>검토중</option><option>보완요청</option><option>승인완료</option></select>
+            </div>
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">사업구분</label>
+              <select id="receipt-search-type" class="form-control" style="width:220px;"><option value="전체">전체</option><option>ESCO</option><option>시설개선</option><option>신재생</option><option>기타</option></select>
+            </div>
+            <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+              <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">검색어</label>
+              <div style="display:flex; gap:8px; width:500px; max-width:100%;"><select id="receipt-search-key" class="form-control" style="width:130px; flex:0 0 auto;"><option value="전체">전체</option><option value="projectName">프로젝트명</option><option value="customer">고객사명</option><option value="manager">담당자</option></select><input id="receipt-search-word" class="form-control" type="text" style="flex:1;" placeholder="검색어를 입력하세요."></div>
             </div>
           </div>
-          <div style="display:flex; justify-content:center; gap:8px; margin-top:18px;"><button class="btn btn-primary" id="receipt-search">${uiIcon('search')} 검색</button><button class="btn btn-outline" id="receipt-reset">초기화</button></div>
+          <div style="display:flex; gap:8px; justify-content:flex-end; margin-top:16px; border-top:1px solid var(--border); padding-top:16px;"><button class="btn btn-primary" id="receipt-search">${uiIcon('search')} 검색</button><button class="btn btn-outline" id="receipt-reset">초기화</button></div>
         </div>
         <div class="card">
-          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;"><div class="card-title" style="margin:0;">사업접수현황</div><div style="display:flex; gap:8px;"><button class="btn btn-outline" id="receipt-excel" style="height:32px; padding:0 12px; font-size:13px;">${uiIcon('download')} 다운로드(Excel)</button><button class="btn btn-primary" id="receipt-new" style="height:32px; padding:0 12px; font-size:13px;">${uiIcon('plus')} 신규 프로젝트 생성</button></div></div>
-          <div style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">전체 <strong id="receipt-total" style="color:var(--blue);">0</strong>건</div>
+          <div class="card-title">사업접수현황</div>
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; gap:10px;"><div style="font-size:13px; color:var(--text-muted);">전체 <strong id="receipt-total" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp; 현재 <strong id="receipt-current-page" style="color:var(--text);">1/1</strong> 페이지</div><div style="display:flex; gap:8px;"><button class="btn btn-outline" id="receipt-excel" style="height:32px; padding:0 12px; font-size:13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 엑셀 다운로드</button><button class="btn btn-primary" id="receipt-new" style="height:32px; padding:0 12px; font-size:13px;">${uiIcon('plus')} 신규 프로젝트 생성</button></div></div>
           <div class="table-container"><table class="data-table"><thead><tr><th style="width:64px;">No.</th><th>접수번호</th><th>프로젝트명</th><th>고객사</th><th>사업구분</th><th>담당자</th><th>접수일</th><th>진행상태</th><th style="width:88px;">상세</th></tr></thead><tbody id="receipt-table-body"></tbody></table></div>
-          <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;"><div class="pagination" id="receipt-pagination"></div></div>
+          <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;"><div></div><div class="pagination" id="receipt-pagination"></div><div></div></div>
         </div>`;
       setTimeout(() => {
         let currentPage = 1;
         const pageSize = 10;
-        const statusClass = status => ({ '접수완료':'badge-success', '검토중':'badge-warning', '보완요청':'badge-danger', '승인완료':'badge-secondary' }[status] || 'badge-secondary');
+        const statusClass = status => ({ '접수완료':'badge-status-success', '검토중':'badge-status-warning', '보완요청':'badge-status-danger', '승인완료':'badge-status-secondary' }[status] || 'badge-status-secondary');
         const filteredRows = () => {
           const from = wrapper.querySelector('#receipt-search-from').value;
           const to = wrapper.querySelector('#receipt-search-to').value;
@@ -237,7 +301,8 @@
           const rows = filteredRows(); const totalPages = Math.max(1, Math.ceil(rows.length / pageSize)); currentPage = Math.min(currentPage, totalPages);
           const start = (currentPage - 1) * pageSize; const visible = rows.slice(start, start + pageSize);
           wrapper.querySelector('#receipt-total').textContent = rows.length;
-          wrapper.querySelector('#receipt-table-body').innerHTML = visible.length ? visible.map((row, index) => `<tr><td style="text-align:center; color:var(--text-muted);">${start + index + 1}</td><td>${row.receiptNo}</td><td style="font-weight:700;">${row.projectName}</td><td>${row.customer}</td><td>${row.type}</td><td>${row.manager}</td><td>${row.receiptDate}</td><td style="text-align:center;"><span class="badge ${statusClass(row.status)}">${row.status}</span></td><td style="text-align:center;"><button type="button" class="btn btn-outline receipt-detail" data-id="${row.id}" style="height:26px; padding:0 8px; font-size:12px;">상세보기</button></td></tr>`).join('') : '<tr><td colspan="9" style="padding:36px; color:var(--text-muted); text-align:center;">조회된 사업접수 내역이 없습니다.</td></tr>';
+          wrapper.querySelector('#receipt-current-page').textContent = `${currentPage}/${totalPages}`;
+          wrapper.querySelector('#receipt-table-body').innerHTML = visible.length ? visible.map((row, index) => `<tr><td style="text-align:center;">${start + index + 1}</td><td>${row.receiptNo}</td><td>${row.projectName}</td><td>${row.customer}</td><td>${row.type}</td><td>${row.manager}</td><td>${row.receiptDate}</td><td style="text-align:center;"><span class="badge ${statusClass(row.status)}">${row.status}</span></td><td style="text-align:center;"><button type="button" class="btn btn-outline receipt-detail" data-id="${row.id}" style="height:28px; padding:0 8px; font-size:13px;">상세보기</button></td></tr>`).join('') : '<tr><td colspan="9" style="padding:36px; text-align:center;">조회된 사업접수 내역이 없습니다.</td></tr>';
           wrapper.querySelector('#receipt-pagination').innerHTML = Array.from({length: totalPages}, (_, i) => `<button class="page-btn ${i + 1 === currentPage ? 'active' : ''}" data-page="${i + 1}">${i + 1}</button>`).join('');
           wrapper.querySelectorAll('.page-btn').forEach(button => button.onclick = () => { currentPage = Number(button.dataset.page); render(); });
           wrapper.querySelectorAll('.receipt-detail').forEach(button => button.onclick = () => { const row = projectReceiptList.find(item => item.id === Number(button.dataset.id)); alert(`${row.projectName}\n접수번호: ${row.receiptNo}\n고객사: ${row.customer}\n진행상태: ${row.status}`); });
@@ -245,7 +310,7 @@
         wrapper.querySelector('#receipt-search').onclick = () => { currentPage = 1; render(); };
         wrapper.querySelector('#receipt-reset').onclick = () => { wrapper.querySelectorAll('input').forEach(input => input.value = ''); wrapper.querySelectorAll('select').forEach(select => select.selectedIndex = 0); currentPage = 1; render(); };
         wrapper.querySelector('#receipt-new').onclick = () => selectMenu('rec-create', '신규 프로젝트 생성');
-        wrapper.querySelector('#receipt-excel').onclick = () => alert('사업접수현황 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.');
+        wrapper.querySelector('#receipt-excel').onclick = () => alert('전체 조회 결과 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.');
         render();
       }, 0);
       return wrapper;
@@ -273,7 +338,7 @@
                 <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
               </div>
               <input type="date" id="search-start-date" class="form-control" style="width:150px;">
-              <span style="color:var(--text-muted);">~</span>
+              <span style="">~</span>
               <input type="date" id="search-end-date" class="form-control" style="width:150px;">
             </div>
           </div>
@@ -415,23 +480,23 @@
 
           const tbody = wrapper.querySelector('#admin-table-body');
           tbody.innerHTML = paginated.map((admin, idx) => {
-            const bc = admin.status === '사용' ? 'badge-success' : 'badge-danger';
+            const bc = admin.status === '사용' ? 'badge-status-success' : 'badge-status-danger';
             return `<tr>
-              <td style="color:var(--text-muted); font-size:13px; text-align:center;">${startIdx + idx + 1}</td>
+              <td style="text-align:center;">${startIdx + idx + 1}</td>
               <td>${admin.empNo}</td>
-              <td style="color:var(--text-muted); font-size:13px;">${admin.username}</td>
+              <td style="">${admin.username}</td>
               <td>${admin.name}</td>
               <td>${admin.dept}</td>
               <td>${admin.position}</td>
               <td>${admin.email}</td>
               <td style="text-align:center;"><span class="badge ${bc}">${admin.status}</span></td>
-              <td style="color:var(--text-muted); font-size:13px;">${dateOnly(admin.regDate)}</td>
+              <td style="">${dateOnly(admin.regDate)}</td>
               <td>${admin.regUser}</td>
               <td style="text-align:center;">
-                <button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:13px;"
+                <button class="btn btn-outline" style="height:28px; padding:0 8px; font-size:13px;"
                   onclick="openAdminDetail(${admin.id})">상세보기</button>
               </td>
-              <td style="color:var(--text-muted); font-size:13px;">${dateOnly(admin.editDate)}</td>
+              <td style="">${dateOnly(admin.editDate)}</td>
             </tr>`;
           }).join('');
 
@@ -546,7 +611,7 @@
               <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">조회기간 (등록일)</label>
               <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                 <input type="date" class="form-control" style="width:150px;" value="2026-06-01">
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <input type="date" class="form-control" style="width:150px;" value="2026-06-16">
               </div>
             </div>
@@ -572,11 +637,12 @@
           <div class="auth-toolbar">
             <div class="card-title" style="margin:0;">권한그룹 및 권한 관리</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="btn btn-outline" onclick="alert('선택한 권한그룹 삭제 기능입니다.')">${uiIcon('trash')} 삭제</button>
-              <button class="btn btn-outline" onclick="alert('권한그룹 목록 Excel 다운로드 기능입니다.')">${uiIcon('download')} Excel 다운로드</button>
-              <button class="btn btn-accent" onclick="selectMenu('common-2','권한그룹 추가하기')">${uiIcon('plus')} 권한그룹 추가하기</button>
+              <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('선택한 권한그룹 삭제 기능입니다.')">${uiIcon('trash')} 삭제</button>
+              <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 조회 결과 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 엑셀 다운로드</button>
+              <button class="btn btn-accent" style="height:32px; padding:0 14px; font-size:13px;" onclick="authShowRegister&&authShowRegister()">${uiIcon('plus')} 권한그룹 추가하기</button>
             </div>
           </div>
+          <div style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">전체 <strong style="color:var(--blue);">${authGroups.length}</strong>건 &nbsp;|&nbsp; 현재 <strong style="color:var(--text);">1/1</strong> 페이지</div>
           <div class="table-container">
             <table class="data-table">
               <thead>
@@ -597,27 +663,24 @@
                   <tr>
                     <td><input type="checkbox"></td>
                     <td>${group.no}</td>
-                    <td><button class="btn btn-outline" style="height:32px;" onclick="selectMenu('common-2','권한그룹 추가하기')">${group.name}</button></td>
+                    <td><button class="btn btn-outline" style="height:32px;" onclick="authShowRegister&&authShowRegister()">${group.name}</button></td>
                     <td style="text-align:left;">${group.desc}</td>
                     <td>${group.created}</td>
                     <td>${group.owner}</td>
                     <td>${group.updated}</td>
-                    <td><span class="badge badge-secondary">${group.count}</span></td>
-                    <td><button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:13px; color:var(--red-dk); border-color:var(--red-md);" onclick="deleteAuthGroup('${group.name}')">삭제</button></td>
+                    <td><span class="badge badge-status-secondary">${group.count}</span></td>
+                    <td><button class="btn btn-outline" style="height:28px; padding:0 8px; font-size:13px;" onclick="deleteAuthGroup('${group.name}')">삭제</button></td>
                   </tr>
                 `).join('')}
               </tbody>
             </table>
           </div>
-          <div class="table-footer">
-            <span>전체 25,214건 중 1-5 표시</span>
+          <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;">
+            <div></div>
             <div class="pagination">
               <button class="page-btn active">1</button>
-              <button class="page-btn">2</button>
-              <button class="page-btn">3</button>
-              <button class="page-btn">4</button>
-              <button class="page-btn">5</button>
             </div>
+            <div></div>
           </div>
         </div>
       `;
@@ -691,7 +754,7 @@
           <div class="auth-toolbar">
             <div>
               <div class="card-title" style="margin-bottom:8px;">관리자 직원 매핑</div>
-              <div style="color:var(--text-muted); font-size:13px;">한 명의 관리자 직원은 여러 개의 권한그룹에 매핑될 수 있습니다.</div>
+              <div style="">한 명의 관리자 직원은 여러 개의 권한그룹에 매핑될 수 있습니다.</div>
             </div>
             <button class="btn btn-accent" onclick="openAuthEmployeeModal()">${uiIcon('users')} 관리자 직원 추가하기</button>
           </div>
@@ -720,7 +783,7 @@
                   <td>과장</td>
                   <td>2026.06.09</td>
                   <td>이희성</td>
-                  <td><button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:13px; color:var(--red-dk); border-color:var(--red-md);" onclick="removeAuthEmployee('장시형')">삭제</button></td>
+                  <td><button class="btn btn-outline" style="height:28px; padding:0 8px; font-size:13px;" onclick="removeAuthEmployee('장시형')">삭제</button></td>
                 </tr>
                 <tr>
                   <td>14</td>
@@ -731,13 +794,13 @@
                   <td>사원</td>
                   <td>2026.06.09</td>
                   <td>이희성</td>
-                  <td><button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:13px; color:var(--red-dk); border-color:var(--red-md);" onclick="removeAuthEmployee('최미경')">삭제</button></td>
+                  <td><button class="btn btn-outline" style="height:28px; padding:0 8px; font-size:13px;" onclick="removeAuthEmployee('최미경')">삭제</button></td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:16px;">
-            <button class="btn btn-outline" onclick="selectMenu('common-2','검색/조회')">목록</button>
+            <button class="btn btn-outline" onclick="authShowList&&authShowList()">목록</button>
             <button class="btn btn-primary" onclick="alert('권한그룹 정보와 메뉴별 권한이 저장되었습니다.')">저장</button>
           </div>
         </div>
@@ -750,10 +813,10 @@
             </div>
             <div class="auth-employee-modal-body">
               <div class="card search-card" style="margin-bottom:14px;">
-                <div class="search-grid">
-                  <div class="form-group">
-                    <label>검색 구분</label>
-                    <select class="form-control">
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                  <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+                    <label style="width:90px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">검색 구분</label>
+                    <select class="form-control" style="flex:1;">
                       <option>전체</option>
                       <option>사원번호</option>
                       <option>아이디</option>
@@ -763,14 +826,13 @@
                       <option>이메일</option>
                     </select>
                   </div>
-                  <div class="form-group">
-                    <label>키워드 검색</label>
-                    <input class="form-control" placeholder="검색어를 입력하세요.">
+                  <div class="form-group" style="display:flex; flex-direction:row; align-items:center; gap:12px;">
+                    <label style="width:90px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">키워드 검색</label>
+                    <input class="form-control" style="flex:1;" placeholder="검색어를 입력하세요.">
                   </div>
-                  <div class="form-group">
-                    <label>&nbsp;</label>
-                    <button class="btn btn-primary">${uiIcon('search')} 검색</button>
-                  </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; margin-top:16px; border-top:1px solid var(--border); padding-top:16px;">
+                  <button class="btn btn-primary">${uiIcon('search')} 검색</button>
                 </div>
               </div>
               <div class="table-container">
@@ -796,7 +858,7 @@
                       <td>기획지원팀</td>
                       <td>과장</td>
                       <td>simon@kepcoes.co.kr</td>
-                      <td><span class="badge badge-success">사용 Y</span></td>
+                      <td><span class="badge badge-status-success">사용 Y</span></td>
                     </tr>
                     <tr>
                       <td><input type="checkbox"></td>
@@ -806,7 +868,7 @@
                       <td>사업관리부</td>
                       <td>차장</td>
                       <td>dhkim@kepcoes.co.kr</td>
-                      <td><span class="badge badge-success">사용 Y</span></td>
+                      <td><span class="badge badge-status-success">사용 Y</span></td>
                     </tr>
                     <tr>
                       <td><input type="checkbox"></td>
@@ -816,7 +878,7 @@
                       <td>계약관리부</td>
                       <td>대리</td>
                       <td>sjpark@kepcoes.co.kr</td>
-                      <td><span class="badge badge-success">사용 Y</span></td>
+                      <td><span class="badge badge-status-success">사용 Y</span></td>
                     </tr>
                   </tbody>
                 </table>
@@ -1029,7 +1091,7 @@
         admin.authGroups.forEach(gId => {
           const badge = document.createElement('span');
           badge.className = 'badge badge-secondary';
-          badge.style.fontSize = '12px';
+          badge.style.fontSize = '13px';
           badge.style.padding = '5px 12px';
           badge.style.border = '1px solid var(--border)';
           badge.textContent = groupNames[gId] || `그룹#${gId}`;
@@ -1114,7 +1176,7 @@
                   <button type="button" class="date-preset-btn" onclick="setStatPeriodPreset('${childId}', 'all', this)">전체</button>
                 </div>
                 <input type="date" id="${childId}-start-date" class="form-control" style="width:150px;" value="2025-12-01">
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <input type="date" id="${childId}-end-date" class="form-control" style="width:150px;" value="2026-05-31">
               </div>
             </div>
@@ -1266,20 +1328,20 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>ESCO(시설대여)계약</strong></td>
+                    <td>ESCO(시설대여)계약</td>
                     <td>502건</td>
                     <td>82.3%</td>
-                    <td><strong style="color: var(--blue-dk);">5,180억원</strong></td>
+                    <td>5,180억원</td>
                     <td>3자계약 (사업자·사용자·EPC사)</td>
                   </tr>
                   <tr>
-                    <td><strong>장기할부판매계약 등</strong></td>
+                    <td>장기할부판매계약 등</td>
                     <td>108건</td>
                     <td>17.7%</td>
-                    <td><strong style="color: var(--amber-dk);">1,146억원</strong></td>
+                    <td>1,146억원</td>
                     <td>2자계약 (사업자·사용자)</td>
                   </tr>
-                  <tr style="background-color: var(--bg); font-weight: 700;">
+                  <tr style="background-color: var(--bg);">
                     <td>합계</td>
                     <td>610건</td>
                     <td>100%</td>
@@ -1400,42 +1462,42 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>2021</strong></td>
+                    <td>2021</td>
                     <td>58건</td>
                     <td>540억원</td>
                     <td style="color: var(--text-muted);">—</td>
                     <td style="color: var(--text-muted);">—</td>
                   </tr>
                   <tr>
-                    <td><strong>2022</strong></td>
+                    <td>2022</td>
                     <td>87건</td>
                     <td>820억원</td>
-                    <td style="color: var(--green); font-weight: 700;">+50.0%</td>
-                    <td style="color: var(--green); font-weight: 700;">+51.9%</td>
+                    <td>+50.0%</td>
+                    <td>+51.9%</td>
                   </tr>
                   <tr>
-                    <td><strong>2023</strong></td>
+                    <td>2023</td>
                     <td>121건</td>
                     <td>1,260억원</td>
-                    <td style="color: var(--green); font-weight: 700;">+39.1%</td>
-                    <td style="color: var(--green); font-weight: 700;">+53.7%</td>
+                    <td>+39.1%</td>
+                    <td>+53.7%</td>
                   </tr>
                   <tr>
-                    <td><strong>2024</strong></td>
+                    <td>2024</td>
                     <td>145건</td>
                     <td>1,510억원</td>
-                    <td style="color: var(--green); font-weight: 700;">+19.8%</td>
-                    <td style="color: var(--green); font-weight: 700;">+19.8%</td>
+                    <td>+19.8%</td>
+                    <td>+19.8%</td>
                   </tr>
                   <tr>
-                    <td><strong>2025</strong></td>
+                    <td>2025</td>
                     <td>162건</td>
                     <td>1,690억원</td>
-                    <td style="color: var(--green); font-weight: 700;">+11.7%</td>
-                    <td style="color: var(--green); font-weight: 700;">+11.9%</td>
+                    <td>+11.7%</td>
+                    <td>+11.9%</td>
                   </tr>
                   <tr style="background-color: var(--bg);">
-                    <td><strong>2026 (~05월)</strong></td>
+                    <td>2026 (~05월)</td>
                     <td>37건</td>
                     <td>506억원</td>
                     <td style="color: var(--text-muted);">—</td>
@@ -1533,27 +1595,27 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>EERS팀</strong></td>
+                    <td>EERS팀</td>
                     <td>412건</td>
                     <td>4,150억원</td>
                     <td>조명·냉난방 중심</td>
-                    <td style="font-weight: 700; color: var(--blue-dk);">67.5%</td>
+                    <td>67.5%</td>
                   </tr>
                   <tr>
-                    <td><strong>운영실</strong></td>
+                    <td>운영실</td>
                     <td>138건</td>
                     <td>1,520억원</td>
                     <td>보일러/열원설비 중심</td>
-                    <td style="font-weight: 700; color: var(--green-dk);">22.6%</td>
+                    <td>22.6%</td>
                   </tr>
                   <tr>
-                    <td><strong>기획지원팀</strong></td>
+                    <td>기획지원팀</td>
                     <td>60건</td>
                     <td>656억원</td>
                     <td>ZEB·신사업 분야</td>
-                    <td style="font-weight: 700; color: var(--amber-dk);">9.9%</td>
+                    <td>9.9%</td>
                   </tr>
-                  <tr style="background-color: var(--bg); font-weight: 700;">
+                  <tr style="background-color: var(--bg);">
                     <td>합계</td>
                     <td>610건</td>
                     <td>6,326억원</td>
@@ -1762,27 +1824,27 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>롯데슈퍼LED</strong></td>
+                    <td>롯데슈퍼LED</td>
                     <td>48억원</td>
                     <td>27.9억원</td>
-                    <td style="font-weight: 700; color: var(--green-dk);">58.2%</td>
-                    <td><span class="badge badge-success">정상</span></td>
+                    <td>58.2%</td>
+                    <td><span class="badge badge-status-success">정상</span></td>
                   </tr>
                   <tr>
-                    <td><strong>일공팩</strong></td>
+                    <td>일공팩</td>
                     <td>32억원</td>
                     <td>15.2억원</td>
-                    <td style="font-weight: 700; color: var(--blue-dk);">47.5%</td>
-                    <td><span class="badge badge-warning">진행중</span></td>
+                    <td>47.5%</td>
+                    <td><span class="badge badge-status-warning">진행중</span></td>
                   </tr>
                   <tr>
-                    <td><strong>덕우전자</strong></td>
+                    <td>덕우전자</td>
                     <td>26억원</td>
                     <td>12.2억원</td>
-                    <td style="font-weight: 700; color: var(--blue-dk);">47.0%</td>
-                    <td><span class="badge badge-warning">진행중</span></td>
+                    <td>47.0%</td>
+                    <td><span class="badge badge-status-warning">진행중</span></td>
                   </tr>
-                  <tr style="background-color: var(--bg); font-weight: 700;">
+                  <tr style="background-color: var(--bg);">
                     <td>3개사 평균</td>
                     <td>35.3억원</td>
                     <td>18.4억원</td>
@@ -1894,39 +1956,39 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>2021</strong></td>
+                    <td>2021</td>
                     <td>6.8%</td>
                     <td style="color: var(--text-muted);">—</td>
                     <td>—</td>
                   </tr>
                   <tr>
-                    <td><strong>2022</strong></td>
+                    <td>2022</td>
                     <td>7.0%</td>
-                    <td style="color: var(--green); font-weight: 700;">+0.2%p</td>
+                    <td>+0.2%p</td>
                     <td>—</td>
                   </tr>
                   <tr>
-                    <td><strong>2023</strong></td>
+                    <td>2023</td>
                     <td>7.2%</td>
-                    <td style="color: var(--green); font-weight: 700;">+0.2%p</td>
+                    <td>+0.2%p</td>
                     <td>—</td>
                   </tr>
                   <tr>
-                    <td><strong>2024</strong></td>
+                    <td>2024</td>
                     <td>7.5%</td>
-                    <td style="color: var(--green); font-weight: 700;">+0.3%p</td>
+                    <td>+0.3%p</td>
                     <td>원가상승 반영</td>
                   </tr>
                   <tr>
-                    <td><strong>2025</strong></td>
+                    <td>2025</td>
                     <td>7.6%</td>
-                    <td style="color: var(--green); font-weight: 700;">+0.1%p</td>
+                    <td>+0.1%p</td>
                     <td>—</td>
                   </tr>
                   <tr style="background-color: var(--bg);">
-                    <td><strong>2026 (~05월)</strong></td>
+                    <td>2026 (~05월)</td>
                     <td>7.5%</td>
-                    <td style="color: var(--red); font-weight: 700;">-0.1%p</td>
+                    <td>-0.1%p</td>
                     <td>「수익률 운영지침」 기준 적합</td>
                   </tr>
                 </tbody>
@@ -1994,37 +2056,37 @@
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>2026-01</strong></td>
+                    <td>2026-01</td>
                     <td>0.8억 / 0.8억</td>
                     <td>0.5억 / 0.5억</td>
                     <td>0.4억 / 0.4억</td>
                     <td>1.7억</td>
                   </tr>
                   <tr>
-                    <td><strong>2026-02</strong></td>
+                    <td>2026-02</td>
                     <td>0.8억 / 0.8억</td>
-                    <td><span style="color:var(--red); font-weight:700;">0.5억 / 0.4억</span></td>
+                    <td>0.5억 / 0.4억</td>
                     <td>0.4억 / 0.4억</td>
                     <td>1.6억</td>
                   </tr>
                   <tr>
-                    <td><strong>2026-03</strong></td>
+                    <td>2026-03</td>
                     <td>0.8억 / 0.8억</td>
                     <td>0.5억 / 0.5억</td>
-                    <td><span style="color:var(--red); font-weight:700;">0.4억 / 0.3억</span></td>
+                    <td>0.4억 / 0.3억</td>
                     <td>1.6억</td>
                   </tr>
                   <tr>
-                    <td><strong>2026-04</strong></td>
+                    <td>2026-04</td>
                     <td>0.8억 / 0.8억</td>
                     <td>0.5억 / 0.5억</td>
                     <td>0.4억 / 0.4억</td>
                     <td>1.7억</td>
                   </tr>
                   <tr>
-                    <td><strong>2026-05</strong></td>
-                    <td><span style="color:var(--red); font-weight:700;">0.8억 / 0.7억</span></td>
-                    <td><span style="color:var(--red); font-weight:700;">0.5억 / 0.4억</span></td>
+                    <td>2026-05</td>
+                    <td>0.8억 / 0.7억</td>
+                    <td>0.5억 / 0.4억</td>
                     <td>0.4억 / 0.4억</td>
                     <td>1.5억</td>
                   </tr>
@@ -2088,7 +2150,7 @@
                 <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
               </div>
               <input type="date" id="ip-search-start-date" class="form-control" style="width:150px;">
-              <span style="color:var(--text-muted);">~</span>
+              <span style="">~</span>
               <input type="date" id="ip-search-end-date" class="form-control" style="width:150px;">
             </div>
           </div>
@@ -2118,8 +2180,8 @@
         <div class="card-title">접속 아이피(IP) 목록</div>
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
           <div style="font-size:13px; color:var(--text-muted);">
-            전체 <span id="ip-total-cnt" style="color:var(--blue);">0</span>건 &nbsp;|&nbsp;
-            현재 <span id="ip-current-page" style="color:var(--text);">1/1</span> 페이지
+            전체 <strong id="ip-total-cnt" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp;
+            현재 <strong id="ip-current-page" style="color:var(--text);">1/1</strong> 페이지
           </div>
           <div style="display:flex; gap:8px; align-items:center;">
             <select id="select-ip-page-size" class="form-control" style="width:110px; height:32px; font-size:13px; padding:0 8px; margin:0;">
@@ -2127,8 +2189,9 @@
               <option value="20">20개씩</option>
               <option value="50">50개씩</option>
             </select>
-            <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 접속 아이피 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.')">
-              ${uiIcon('download')} 다운로드(Excel)
+            <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 조회 결과 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              엑셀 다운로드
             </button>
             <button class="btn btn-primary" onclick="openIpAddModal()" style="height:32px; padding:0 14px; font-size:13px; background-color: var(--blue);">
               접속 아이피(IP) 추가하기
@@ -2190,13 +2253,13 @@
           const tbody = wrapper.querySelector('#ip-table-body');
           tbody.innerHTML = paginated.map((item, idx) => {
             return `<tr>
-              <td style="color:var(--text-muted); text-align:center;">${25214 + startIdx + idx}</td>
+              <td style="text-align:center;">${25214 + startIdx + idx}</td>
               <td>${item.ip}</td>
               <td style="text-align:left;">${item.reason}</td>
-              <td style="color:var(--text-muted);">${item.regDate}</td>
+              <td style="">${item.regDate}</td>
               <td>${item.regUser}</td>
               <td style="text-align:center;">
-                <button class="btn btn-outline" style="height:26px; padding:0 8px; font-size:13px; color:var(--red-dk); border-color:var(--red-md);"
+                <button class="btn btn-outline" style="height:28px; padding:0 8px; font-size:13px;"
                   onclick="deleteAccessIp(${item.id})">삭제</button>
               </td>
             </tr>`;
@@ -2341,21 +2404,21 @@
       let cmColType = null;
       let cmEditItem = null;
 
-      const colH = `display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--sidebar-bg);border-bottom:1px solid var(--border);font-weight:700;font-size:13px;color:var(--navy);`;
+      const colH = `display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--navy);border-bottom:1px solid rgba(255,255,255,0.12);font-weight:600;font-size:13px;color:#ffffff;`;
 
       const buildColHtml = (cid, title, placeholder) => `
-        <div style="display:flex;flex-direction:column;min-height:420px;">
+        <div style="display:flex;flex-direction:column;min-height:420px;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--bg2);box-shadow:0 1px 3px rgba(15,23,42,0.05);">
           <div style="${colH}">
             <span>${title}</span>
-            <span id="code-${cid}-count" class="badge badge-secondary" style="font-size:11px; margin:0;">0건</span>
+            <span id="code-${cid}-count" class="badge" style="background:rgba(255,255,255,0.18);color:#fff;font-size:13px;margin:0;font-weight:400;">0건</span>
           </div>
           <div style="padding:8px 10px;border-bottom:1px solid var(--border);display:flex;gap:6px;">
-            <input type="text" id="code-${cid}-kw" class="form-control" style="height:30px;font-size:12px;padding:0 8px;flex:1;" placeholder="${placeholder}"
+            <input type="text" id="code-${cid}-kw" class="form-control" style="height:30px;font-size:13px;padding:0 8px;flex:1;" placeholder="${placeholder}"
               onkeydown="if(event.key==='Enter')cmSearch('${cid}')">
-            <button class="btn btn-outline" style="height:30px;padding:0 8px;font-size:12px;" onclick="cmSearch('${cid}')">검색</button>
+            <button class="btn btn-outline" style="height:30px;padding:0 8px;font-size:13px;" onclick="cmSearch('${cid}')">검색</button>
           </div>
           <div style="flex:1;overflow-y:auto;max-height:380px;">
-            <table class="data-table" style="font-size:12px;">
+            <table class="data-table" style="font-size:13px;">
               <thead><tr>
                 <th style="text-align:center;width:36px;">No</th>
                 <th>코드명</th>
@@ -2366,24 +2429,18 @@
             </table>
           </div>
           <div style="padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:6px;justify-content:flex-end;">
-            <button class="btn btn-outline" style="height:28px;padding:0 10px;font-size:12px;" onclick="cmApplyOrder('${cid}')">순서 적용</button>
-            <button class="btn btn-primary" style="height:28px;padding:0 12px;font-size:12px;" onclick="cmOpenModal('${cid}',null)">등록</button>
+            <button class="btn btn-outline" style="height:32px;padding:0 12px;font-size:13px;" onclick="cmApplyOrder('${cid}')">순서 적용</button>
+            <button class="btn btn-primary" style="height:32px;padding:0 12px;font-size:13px;" onclick="cmOpenModal('${cid}',null)">등록</button>
           </div>
         </div>`;
 
       wrapper.innerHTML = `
         <div class="card">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-            <div class="card-title" style="margin:0;">코드 목록</div>
-            <button class="btn btn-outline" style="height:32px;padding:0 14px;font-size:13px;" onclick="alert('전체 코드 목록이 엑셀(.xlsx)로 다운로드되었습니다.')">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              엑셀 다운로드
-            </button>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;">
+          <div class="card-title">코드 목록</div>
+          <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch;">
             <div id="cm-top-col">${buildColHtml('top','대분류','대분류 검색')}</div>
-            <div id="cm-mid-col" style="border-left:1px solid var(--border);">${buildColHtml('mid','중분류','중분류 검색')}</div>
-            <div id="cm-sub-col" style="border-left:1px solid var(--border);">${buildColHtml('sub','소분류','소분류 검색')}</div>
+            <div id="cm-mid-col">${buildColHtml('mid','중분류','중분류 검색')}</div>
+            <div id="cm-sub-col">${buildColHtml('sub','소분류','소분류 검색')}</div>
           </div>
         </div>`;
 
@@ -2405,7 +2462,7 @@
               <input type="text" id="cm-parent-code" class="form-control" readonly style="background:var(--bg);color:var(--text-muted);cursor:not-allowed;">
             </div>
             <div class="form-group">
-              <label style="font-size:13px;font-weight:600;color:var(--text-label);">코드 <span style="font-size:11px;color:var(--text-muted);">(자동 발번)</span></label>
+              <label style="font-size:13px;font-weight:600;color:var(--text-label);">코드 <span style="">(자동 발번)</span></label>
               <input type="text" id="cm-code-val" class="form-control" readonly style="background:var(--bg);color:var(--text-muted);cursor:not-allowed;">
             </div>
             <div class="form-group">
@@ -2423,7 +2480,7 @@
               <label style="font-size:13px;font-weight:600;color:var(--text-label);">코드설명</label>
               <textarea id="cm-desc" class="form-control" style="height:68px;resize:vertical;" placeholder="코드에 대한 간략한 설명을 입력해주세요."></textarea>
             </div>
-            <div style="background:var(--bg);padding:10px;border-radius:var(--radius-sm);font-size:12px;color:var(--text-muted);border:1px dashed var(--border);">
+            <div style="background:var(--bg);padding:10px;border-radius:var(--radius-sm);font-size:13px;color:var(--text-muted);border:1px dashed var(--border);">
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
                 <div>등록일시: <span id="cm-reg-date">—</span></div>
                 <div>등록자: <span id="cm-reg-user">이희성</span></div>
@@ -2461,10 +2518,10 @@
         tbody.innerHTML = items.map((c, i) => {
           const act = c.id === selectedTopId;
           return `<tr style="${act?'background:var(--blue-lt);':''}" onclick="cmSelTop(${c.id})" class="${act?'':'pointer-row'}">
-            <td style="text-align:center;color:var(--text-muted);">${i+1}</td>
-            <td style="font-weight:${act?700:400};color:${act?'var(--navy)':'inherit'};">${c.codeName}</td>
-            <td style="text-align:center;"><span class="badge ${c.useStatus==='사용(Y)'?'badge-success':'badge-danger'}" style="font-size:10px;">${c.useStatus==='사용(Y)'?'Y':'N'}</span></td>
-            <td style="text-align:center;"><button class="btn btn-outline" style="height:20px;padding:0 5px;font-size:10px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.stopPropagation();cmDel('top',${c.id})">삭제</button></td>
+            <td style="text-align:center;">${i+1}</td>
+            <td>${c.codeName}</td>
+            <td style="text-align:center;"><span class="badge ${c.useStatus==='사용(Y)'?'badge-status-success':'badge-status-danger'}" style="font-size:13px;">${c.useStatus==='사용(Y)'?'Y':'N'}</span></td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.stopPropagation();cmDel('top',${c.id})">삭제</button></td>
           </tr>`;
         }).join('');
       };
@@ -2478,12 +2535,12 @@
         tbody.innerHTML = selectedTopId ? items.map((v, i) => {
           const act = v.id === selectedMidId;
           return `<tr style="${act?'background:var(--blue-lt);':''}" onclick="cmSelMid(${v.id})" class="${act?'':'pointer-row'}">
-            <td style="text-align:center;color:var(--text-muted);">${i+1}</td>
-            <td style="font-weight:${act?700:400};color:${act?'var(--navy)':'inherit'};">${v.valName}</td>
-            <td style="text-align:center;"><span class="badge ${v.useStatus==='사용(Y)'?'badge-success':'badge-danger'}" style="font-size:10px;">${v.useStatus==='사용(Y)'?'Y':'N'}</span></td>
-            <td style="text-align:center;"><button class="btn btn-outline" style="height:20px;padding:0 5px;font-size:10px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.stopPropagation();cmDel('mid',${v.id})">삭제</button></td>
+            <td style="text-align:center;">${i+1}</td>
+            <td>${v.valName}</td>
+            <td style="text-align:center;"><span class="badge ${v.useStatus==='사용(Y)'?'badge-status-success':'badge-status-danger'}" style="font-size:13px;">${v.useStatus==='사용(Y)'?'Y':'N'}</span></td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.stopPropagation();cmDel('mid',${v.id})">삭제</button></td>
           </tr>`;
-        }).join('') : `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;font-size:12px;">대분류를 선택하세요</td></tr>`;
+        }).join('') : `<tr><td colspan="4" style="text-align:center;padding:24px;">대분류를 선택하세요</td></tr>`;
       };
 
       const renderSub = () => {
@@ -2494,12 +2551,12 @@
         if (!tbody) return;
         tbody.innerHTML = selectedMidId ? items.map((v, i) => {
           return `<tr>
-            <td style="text-align:center;color:var(--text-muted);">${i+1}</td>
+            <td style="text-align:center;">${i+1}</td>
             <td>${v.name}</td>
-            <td style="text-align:center;"><span class="badge ${v.useStatus==='사용(Y)'?'badge-success':'badge-danger'}" style="font-size:10px;">${v.useStatus==='사용(Y)'?'Y':'N'}</span></td>
-            <td style="text-align:center;"><button class="btn btn-outline" style="height:20px;padding:0 5px;font-size:10px;color:var(--red-dk);border-color:var(--red-md);" onclick="cmDel('sub',${v.id})">삭제</button></td>
+            <td style="text-align:center;"><span class="badge ${v.useStatus==='사용(Y)'?'badge-status-success':'badge-status-danger'}" style="font-size:13px;">${v.useStatus==='사용(Y)'?'Y':'N'}</span></td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;color:var(--red-dk);border-color:var(--red-md);" onclick="cmDel('sub',${v.id})">삭제</button></td>
           </tr>`;
-        }).join('') : `<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px;font-size:12px;">중분류를 선택하세요</td></tr>`;
+        }).join('') : `<tr><td colspan="4" style="text-align:center;padding:24px;">중분류를 선택하세요</td></tr>`;
       };
 
       const renderAll = () => { renderTop(); renderMid(); renderSub(); };
@@ -2632,7 +2689,7 @@
               <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">기간(일별)</label>
               <div style="display:flex; align-items:center; gap:8px;">
                 <input type="date" id="login-day-start" class="form-control" style="width:150px;">
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <input type="date" id="login-day-end" class="form-control" style="width:150px;">
               </div>
             </div>
@@ -2642,7 +2699,7 @@
               <div style="display:flex; align-items:center; gap:8px;">
                 <select class="form-control" style="width:100px;"><option value="2026">2026년</option><option value="2025">2025년</option></select>
                 <select class="form-control" style="width:80px;"><option value="01">01월</option></select>
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <select class="form-control" style="width:100px;"><option value="2026">2026년</option></select>
                 <select class="form-control" style="width:80px;"><option value="09" selected>09월</option></select>
               </div>
@@ -2652,7 +2709,7 @@
               <label style="width:130px; flex-shrink:0; font-weight:600; font-size:14px; color:var(--text-label); margin:0;">기간(연도별)</label>
               <div style="display:flex; align-items:center; gap:8px;">
                 <select class="form-control" style="width:120px;"><option value="2024">2024년</option></select>
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <select class="form-control" style="width:120px;"><option value="2026" selected>2026년</option></select>
               </div>
             </div>
@@ -2696,16 +2753,16 @@
 
             <!-- 수평 그리드 (점선) + Y 레이블 -->
             <line x1="55" y1="50"  x2="950" y2="50"  stroke="#eef2f7" stroke-width="1" stroke-dasharray="5,5"/>
-            <text x="44" y="54"  font-size="11" fill="#94a3b8" text-anchor="end">150</text>
+            <text x="44" y="54"  font-size="13" fill="#94a3b8" text-anchor="end">150</text>
 
             <line x1="55" y1="117" x2="950" y2="117" stroke="#eef2f7" stroke-width="1" stroke-dasharray="5,5"/>
-            <text x="44" y="121" font-size="11" fill="#94a3b8" text-anchor="end">100</text>
+            <text x="44" y="121" font-size="13" fill="#94a3b8" text-anchor="end">100</text>
 
             <line x1="55" y1="183" x2="950" y2="183" stroke="#eef2f7" stroke-width="1" stroke-dasharray="5,5"/>
-            <text x="44" y="187" font-size="11" fill="#94a3b8" text-anchor="end">50</text>
+            <text x="44" y="187" font-size="13" fill="#94a3b8" text-anchor="end">50</text>
 
             <line x1="55" y1="250" x2="950" y2="250" stroke="#dde4ed" stroke-width="1.5"/>
-            <text x="44" y="254" font-size="11" fill="#94a3b8" text-anchor="end">0</text>
+            <text x="44" y="254" font-size="13" fill="#94a3b8" text-anchor="end">0</text>
 
             <!-- 에리어 그라디언트 -->
             <path d="M 100 226 L 200 77 L 300 130 L 400 157 L 500 123 L 600 50 L 700 183 L 800 123 L 900 119 L 900 250 L 100 250 Z"
@@ -2718,7 +2775,7 @@
             <!-- 최고값 어노테이션 (2026.06) -->
             <line x1="600" y1="32" x2="600" y2="50" stroke="#1a4fa0" stroke-width="1" stroke-dasharray="3,3"/>
             <rect x="551" y="14" width="98" height="20" rx="5" fill="#1a4fa0"/>
-            <text x="600" y="28" font-size="11" fill="white" text-anchor="middle" font-weight="600">최고 11,250건</text>
+            <text x="600" y="28" font-size="13" fill="white" text-anchor="middle" font-weight="600">최고 11,250건</text>
 
             <!-- 데이터 포인트 -->
             <circle cx="100" cy="226" r="5" fill="white" stroke="#1a4fa0" stroke-width="2.5" style="cursor:pointer;" onmouseover="showChartTooltip(event,'2026.01',1283)" onmouseout="hideChartTooltip()"/>
@@ -2733,23 +2790,24 @@
             <circle cx="900" cy="119" r="5" fill="white" stroke="#1a4fa0" stroke-width="2.5" style="cursor:pointer;" onmouseover="showChartTooltip(event,'2026.09',7350)" onmouseout="hideChartTooltip()"/>
 
             <!-- X축 레이블 -->
-            <text x="100" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.01</text>
-            <text x="200" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.02</text>
-            <text x="300" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.03</text>
-            <text x="400" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.04</text>
-            <text x="500" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.05</text>
-            <text x="600" y="278" font-size="11" fill="#1a4fa0" font-weight="600" text-anchor="middle">2026.06</text>
-            <text x="700" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.07</text>
-            <text x="800" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.08</text>
-            <text x="900" y="278" font-size="11" fill="#94a3b8" text-anchor="middle">2026.09</text>
+            <text x="100" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.01</text>
+            <text x="200" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.02</text>
+            <text x="300" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.03</text>
+            <text x="400" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.04</text>
+            <text x="500" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.05</text>
+            <text x="600" y="278" font-size="13" fill="#1a4fa0" font-weight="600" text-anchor="middle">2026.06</text>
+            <text x="700" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.07</text>
+            <text x="800" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.08</text>
+            <text x="900" y="278" font-size="13" fill="#94a3b8" text-anchor="middle">2026.09</text>
           </svg>
         </div>
 
         <div class="card">
           <div class="card-title">로그인 이력 데이터</div>
           <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
-            <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 로그인 이력이 엑셀(.xlsx) 파일로 다운로드되었습니다.')">
-              ${uiIcon('download')} 다운로드(Excel)
+            <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 조회 결과 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              엑셀 다운로드
             </button>
           </div>
           <div class="table-container" style="overflow-x:auto;">
@@ -2800,18 +2858,18 @@
           
           tbody.innerHTML = `
             <tr>
-              <td><strong>로그인 횟수</strong></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
-              <td><a href="#" style="color:var(--blue); font-weight:bold; text-decoration:none;" onclick="event.preventDefault(); alert('1,523건 조회')">1,523</a></td>
+              <td>로그인 횟수</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
+              <td>1,523</td>
             </tr>`;
         };
 
@@ -2842,7 +2900,7 @@
                   <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
                 </div>
                 <input type="date" id="menu-search-start-date" class="form-control" style="width:150px;">
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <input type="date" id="menu-search-end-date" class="form-control" style="width:150px;">
                 <button class="btn btn-primary" onclick="alert('조회되었습니다.')">검색</button>
               </div>
@@ -2853,8 +2911,9 @@
         <div class="card">
           <div class="card-title">메뉴별 접속 현황 목록</div>
           <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
-            <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 메뉴별 접속 현황이 엑셀(.xlsx) 파일로 다운로드되었습니다.')">
-              ${uiIcon('download')} 다운로드(Excel)
+            <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 조회 결과 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              엑셀 다운로드
             </button>
           </div>
           <div class="table-container">
@@ -2888,13 +2947,13 @@
           ];
 
           tbody.innerHTML = rows.map(r => {
-            const d1Align = (r.d1.includes('└')) ? 'style="text-align:left; color:var(--text-muted); font-size:12px; padding-left:24px;"' : 'style="text-align:left; font-weight:700;"';
+            const d1Align = (r.d1.includes('└')) ? 'style="text-align:left; color:var(--text-muted); font-size:13px; padding-left:24px;"' : 'style="text-align:left;"';
             const d2Align = (r.d1.includes('└ └')) ? 'style="text-align:left; color:var(--text-muted);"' : 'style="text-align:left;"';
             return `<tr>
               <td ${d1Align}>${r.d1}</td>
               <td ${d2Align}>${r.d2}</td>
               <td style="text-align:left;">${r.d3}</td>
-              <td style="text-align:right; font-weight:bold; color:var(--blue-dk);">${r.count.toLocaleString()}</td>
+              <td style="text-align:right;">${r.count.toLocaleString()}</td>
             </tr>`;
           }).join('');
         };
@@ -2941,7 +3000,7 @@
         <div class="card search-card">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
             <div class="card-title" style="margin:0;">검색 조건</div>
-            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;padding:3px 10px;">ERP 연동 필요</span>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:13px;padding:3px 10px;">ERP 연동 필요</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:12px;">
             <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
@@ -2954,7 +3013,7 @@
                   <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
                 </div>
                 <input type="date" id="pt-start" class="form-control" style="width:150px;" value="2026-01-01">
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <input type="date" id="pt-end" class="form-control" style="width:150px;" value="2026-06-30">
               </div>
             </div>
@@ -2992,18 +3051,18 @@
         </div>
 
         <div class="card">
+          <div class="card-title" style="margin:0;">협력업체 목록</div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-            <div class="card-title" style="margin:0;">협력업체 목록</div>
+            <div style="font-size:13px; color:var(--text-muted);">전체 <strong id="pt-total" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp; 현재 <strong id="pt-current-page" style="color:var(--text);">1/1</strong> 페이지</div>
             <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text-muted);">전체 <strong id="pt-total" style="color:var(--blue);">0</strong>건</span>
               <select id="pt-page-size" class="form-control" style="width:110px;height:32px;font-size:13px;padding:0 8px;margin:0;">
                 <option value="10">10개씩</option>
                 <option value="20">20개씩</option>
                 <option value="50">50개씩</option>
               </select>
-              <button class="btn btn-outline" style="height:32px;padding:0 12px;font-size:13px;" onclick="alert('협력업체 목록이 엑셀(.xlsx)로 다운로드되었습니다.')">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:3px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                다운로드(Excel)
+              <button class="btn btn-outline" style="height:32px; padding:0 12px; font-size:13px;" onclick="alert('전체 조회 결과 목록이 엑셀(.xlsx) 파일로 다운로드되었습니다.')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                엑셀 다운로드
               </button>
             </div>
           </div>
@@ -3038,7 +3097,7 @@
         let pageSize = 10, curPage = 1;
 
         const statusBadge = (s) => {
-          const cls = s==='정상'?'badge-success':s==='중지'?'badge-warning':'badge-danger';
+          const cls = s==='정상'?'badge-status-success':s==='중지'?'badge-status-warning':'badge-status-danger';
           return `<span class="badge ${cls}">${s}</span>`;
         };
 
@@ -3063,18 +3122,19 @@
           const start = (curPage-1)*pageSize;
           const paged = filtered.slice(start, start+pageSize);
           wrapper.querySelector('#pt-total').textContent = total;
+          wrapper.querySelector('#pt-current-page').textContent = `${curPage}/${pages}`;
           wrapper.querySelector('#pt-tbody').innerHTML = paged.map((p, i) => `<tr>
-            <td style="text-align:center;color:var(--text-muted);font-size:13px;">${start+i+1}</td>
-            <td style="font-family:monospace;font-size:13px;color:var(--text-muted);">${p.code}</td>
-            <td style="font-weight:600;">${p.name}</td>
-            <td style="font-size:13px;color:var(--text-muted);">${p.bizNo}</td>
+            <td style="text-align:center;">${start+i+1}</td>
+            <td style="font-family:monospace;">${p.code}</td>
+            <td>${p.name}</td>
+            <td style="">${p.bizNo}</td>
             <td>${p.ceo}</td>
-            <td style="font-size:13px;">${p.manager}<br><span style="color:var(--text-muted);font-size:11px;">${p.managerEmail}</span></td>
+            <td>${p.manager}(${p.managerEmail})</td>
             <td style="text-align:center;">${statusBadge(p.status)}</td>
-            <td style="color:var(--text-muted);font-size:13px;">${p.regDate}</td>
+            <td style="">${p.regDate}</td>
             <td>${p.regUser}</td>
-            <td style="text-align:center;"><button class="btn btn-outline" style="height:26px;padding:0 8px;font-size:13px;" onclick="openPartnerDetail(${p.id})">상세보기</button></td>
-            <td style="color:var(--text-muted);font-size:13px;">${p.editDate||'—'}</td>
+            <td style="text-align:center;"><button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;" onclick="openPartnerDetail(${p.id})">상세보기</button></td>
+            <td style="">${p.editDate||'—'}</td>
           </tr>`).join('');
 
           const pag = wrapper.querySelector('#pt-pagination');
@@ -3085,7 +3145,7 @@
         };
 
         window.ptGoPage = (p) => { curPage=p; updateTable(); };
-        window.openPartnerDetail = (id) => { selectedPartnerId=id; selectMenu('common-7','협력업체 상세'); };
+        window.openPartnerDetail = (id) => { selectedPartnerId=id; if(window.partnerShowDetail) window.partnerShowDetail(); };
 
         const presetBtns = wrapper.querySelectorAll('.date-preset-btn');
         presetBtns.forEach(btn => {
@@ -3121,16 +3181,16 @@
     function getPartnerDetailTemplate() {
       const p = partnerList.find(x => x.id === selectedPartnerId) || partnerList[0];
       const wrapper = document.createElement('div');
-      const statusBadge = (s) => { const cls=s==='정상'?'badge-success':s==='중지'?'badge-warning':'badge-danger'; return `<span class="badge ${cls}">${s}</span>`; };
+      const statusBadge = (s) => { const cls=s==='정상'?'badge-status-success':s==='중지'?'badge-status-warning':'badge-status-danger'; return `<span class="badge ${cls}">${s}</span>`; };
       const roStyle = `background:var(--bg);color:var(--text-muted);cursor:not-allowed;`;
 
       wrapper.innerHTML = `
         <div class="card" style="margin-bottom:16px;">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
             <div class="card-title" style="margin:0;">ERP 기본정보</div>
-            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;">ERP 연동 (읽기전용)</span>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:13px;">ERP 연동 (읽기전용)</span>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
             <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">거래처코드</label>
               <input class="form-control" readonly style="${roStyle}" value="${p.code}"></div>
             <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">거래처명</label>
@@ -3139,7 +3199,7 @@
               <input class="form-control" readonly style="${roStyle}" value="${p.bizNo}"></div>
             <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">대표자명</label>
               <input class="form-control" readonly style="${roStyle}" value="${p.ceo}"></div>
-            <div class="form-group" style="grid-column:1/-1;"><label style="font-size:13px;font-weight:600;color:var(--text-label);">주소</label>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">주소</label>
               <input class="form-control" readonly style="${roStyle}" value="${p.address}"></div>
             <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">거래담당자</label>
               <input class="form-control" readonly style="${roStyle}" value="${p.manager} (${p.managerEmail} / ${p.managerTel})"></div>
@@ -3150,7 +3210,7 @@
 
         <div class="card">
           <div class="card-title">PMS 추가정보</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="display:flex;flex-direction:column;gap:14px;">
             <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">신용등급</label>
               <select id="pd-credit" class="form-control">
                 ${['AAA','AA+','AA','AA-','A+','A','A-','BBB+','BBB','BBB-','BB','B','CCC','CC','C','D'].map(g=>`<option${g===p.creditGrade?' selected':''}>${g}</option>`).join('')}
@@ -3185,7 +3245,7 @@
                 ${['이행보증금','공공기관','기타'].map(t=>`<option${t===p.guaranteeType?' selected':''}>${t}</option>`).join('')}
               </select>
             </div>
-            <div class="form-group" style="grid-column:1/-1;"><label style="font-size:13px;font-weight:600;color:var(--text-label);">보증내역</label>
+            <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">보증내역</label>
               <input type="text" id="pd-gdetail" class="form-control" value="${p.guaranteeDetail}" placeholder="예: 지급보증보험 100%"></div>
             <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">에너지사용자 소재지 (시/도)</label>
               <select id="pd-loc" class="form-control">
@@ -3199,13 +3259,13 @@
             <div class="form-group"><label style="font-size:13px;font-weight:600;color:var(--text-label);">연락처</label>
               <input type="text" id="pd-contact" class="form-control" value="${p.contact}" placeholder="010-0000-0000"></div>
           </div>
-          <div style="background:var(--bg);padding:10px 14px;border-radius:var(--radius-sm);border:1px dashed var(--border);font-size:12px;color:var(--text-muted);margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          <div style="background:var(--bg);padding:10px 14px;border-radius:var(--radius-sm);border:1px dashed var(--border);font-size:13px;color:var(--text-muted);margin-top:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
             <div>등록일시: <strong>${p.regDate}</strong></div>
             <div>등록자: <strong>${p.regUser}</strong></div>
             <div>최종수정: <strong>${p.editDate||'—'}</strong></div>
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
-            <button class="btn btn-outline" onclick="selectMenu('common-7','협력업체 목록')">목록</button>
+            <button class="btn btn-outline" onclick="partnerShowList&&partnerShowList()">목록</button>
             <button class="btn btn-primary" id="pd-btn-save">수정 저장</button>
           </div>
         </div>`;
@@ -3236,7 +3296,7 @@
             editDate: `${fmtS(now)}(이희성)`
           };
           alert('협력업체 PMS 추가정보가 저장되었습니다.');
-          selectMenu('common-7','협력업체 목록');
+          if(window.partnerShowList) window.partnerShowList();
         };
       }, 50);
 
@@ -3260,20 +3320,20 @@
         </div>
         <div class="manual-modal-body" style="padding:20px;max-height:70vh;overflow-y:auto;">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-            <div><span style="font-size:12px;color:var(--text-muted);">게시대상</span><div id="ntd-target" style="font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">우선노출</span><div id="ntd-pinned" style="font-weight:700;margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">게시여부</span><div id="ntd-status" style="font-weight:700;margin-top:4px;"></div></div>
-            <div style="grid-column:1/-1;"><span style="font-size:12px;color:var(--text-muted);">제목</span><div id="ntd-title" style="font-size:16px;font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">게시기간</span><div id="ntd-period" style="margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">작성자</span><div id="ntd-author" style="margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">조회수</span><div id="ntd-views" style="margin-top:4px;"></div></div>
+            <div><span style="">게시대상</span><div id="ntd-target" style="font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="">우선노출</span><div id="ntd-pinned" style="font-weight:700;margin-top:4px;"></div></div>
+            <div><span style="">게시여부</span><div id="ntd-status" style="font-weight:700;margin-top:4px;"></div></div>
+            <div style="grid-column:1/-1;"><span style="">제목</span><div id="ntd-title" style="font-size:16px;font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="">게시기간</span><div id="ntd-period" style="margin-top:4px;"></div></div>
+            <div><span style="">작성자</span><div id="ntd-author" style="margin-top:4px;"></div></div>
+            <div><span style="">조회수</span><div id="ntd-views" style="margin-top:4px;"></div></div>
           </div>
           <div style="margin-bottom:16px;">
-            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">내용</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">내용</div>
             <div id="ntd-content" style="min-height:100px;background:var(--bg);padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border);font-size:14px;line-height:1.7;white-space:pre-wrap;"></div>
           </div>
           <div id="ntd-files-wrap" style="display:none;">
-            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">첨부파일</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">첨부파일</div>
             <div id="ntd-files" style="display:flex;flex-direction:column;gap:6px;"></div>
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:14px;">
@@ -3300,8 +3360,8 @@
         selectedNoticeId = id;
         n.views = (n.views||0) + 1;
         document.getElementById('ntd-target').textContent = n.target;
-        document.getElementById('ntd-pinned').innerHTML = n.pinned==='Y'?`<span class="badge badge-warning" style="font-size:11px;">우선노출</span>`:'—';
-        document.getElementById('ntd-status').innerHTML = n.postStatus==='게시'?`<span class="badge badge-success">게시</span>`:`<span class="badge badge-secondary">미게시</span>`;
+        document.getElementById('ntd-pinned').innerHTML = n.pinned==='Y'?`<span class="badge badge-status-warning" style="font-size:13px;">우선노출</span>`:'—';
+        document.getElementById('ntd-status').innerHTML = n.postStatus==='게시'?`<span class="badge badge-status-success">게시</span>`:`<span class="badge badge-status-secondary">미게시</span>`;
         document.getElementById('ntd-title').textContent = n.title;
         document.getElementById('ntd-period').textContent = n.period;
         document.getElementById('ntd-author').textContent = n.author;
@@ -3314,8 +3374,8 @@
           fd.innerHTML = n.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             <span style="flex:1;">${f}</span>
-            <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 미리봅니다: ${f}')">바로보기</button>
-            <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 다운로드합니다: ${f}')">다운로드</button>
+            <button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;" onclick="alert('파일을 미리봅니다: ${f}')">바로보기</button>
+            <button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;" onclick="alert('파일을 다운로드합니다: ${f}')">다운로드</button>
           </div>`).join('');
         } else fw.style.display = 'none';
         updateTable();
@@ -3325,7 +3385,7 @@
       window.ntOpenEdit = () => {
         ntCloseDetail();
         noticeEditMode = true;
-        selectMenu('common-8','공지사항 등록');
+        if(window.ntShowRegister) window.ntShowRegister();
       };
       window.ntDeleteFromDetail = () => {
         const n = noticeList.find(x => x.id===selectedNoticeId);
@@ -3342,7 +3402,7 @@
         <div class="card search-card">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
             <div class="card-title" style="margin:0;">검색 조건</div>
-            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;padding:3px 10px;">ERP 연동 필요</span>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:13px;padding:3px 10px;">ERP 연동 필요</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:12px;">
             <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
@@ -3355,7 +3415,7 @@
                   <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
                 </div>
                 <input type="date" id="nt-start" class="form-control" style="width:150px;" value="2026-01-01">
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <input type="date" id="nt-end" class="form-control" style="width:150px;" value="2026-06-30">
               </div>
             </div>
@@ -3389,15 +3449,13 @@
         </div>
 
         <div class="card">
+          <div class="card-title" style="margin:0;">공지사항 목록</div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-            <div class="card-title" style="margin:0;">공지사항 목록</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text-muted);">전체 <strong id="nt-total" style="color:var(--blue);">0</strong>건</span>
-              <button class="btn btn-primary" onclick="ntOpenRegister()" style="height:32px;padding:0 14px;font-size:13px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                등록
-              </button>
-            </div>
+            <div style="font-size:13px; color:var(--text-muted);">전체 <strong id="nt-total" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp; 현재 <strong id="nt-current-page" style="color:var(--text);">1/1</strong> 페이지</div>
+            <button class="btn btn-primary" onclick="ntOpenRegister()" style="height:32px;padding:0 14px;font-size:13px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              등록
+            </button>
           </div>
           <div class="table-container">
             <table class="data-table">
@@ -3417,8 +3475,11 @@
               <tbody id="nt-tbody"></tbody>
             </table>
           </div>
+          <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;"><div></div><div class="pagination" id="nt-pagination"></div><div></div></div>
         </div>`;
 
+      let ntCurrentPage = 1;
+      const ntPageSize = 10;
       const updateTable = window.ntUpdateTable = () => {
         const key = wrapper.querySelector('#nt-key').value;
         const kw = wrapper.querySelector('#nt-kw').value.toLowerCase().trim();
@@ -3433,22 +3494,30 @@
           }
           return true;
         });
-        wrapper.querySelector('#nt-total').textContent = filtered.length;
+        const ntTotal = filtered.length, ntPages = Math.ceil(ntTotal/ntPageSize)||1;
+        if (ntCurrentPage > ntPages) ntCurrentPage = ntPages;
+        const ntStart = (ntCurrentPage-1)*ntPageSize;
+        const ntPaged = filtered.slice(ntStart, ntStart+ntPageSize);
+        wrapper.querySelector('#nt-total').textContent = ntTotal;
+        wrapper.querySelector('#nt-current-page').textContent = `${ntCurrentPage}/${ntPages}`;
         const tbody = wrapper.querySelector('#nt-tbody');
-        tbody.innerHTML = filtered.map((n, i) => `<tr>
-          <td style="text-align:center;color:var(--text-muted);font-size:13px;">${i+1}</td>
-          <td style="text-align:center;"><span class="badge badge-secondary" style="font-size:11px;">${n.target}</span></td>
-          <td style="text-align:center;">${n.pinned==='Y'?'<span class="badge badge-warning" style="font-size:11px;">Y</span>':'—'}</td>
-          <td style="text-align:left;"><a href="#" style="color:var(--blue);text-decoration:none;font-weight:500;" onclick="event.preventDefault();ntOpenDetail(${n.id})">${n.title}</a></td>
-          <td style="font-size:13px;color:var(--text-muted);">${n.period}</td>
+        tbody.innerHTML = ntPaged.map((n, i) => `<tr>
+          <td style="text-align:center;">${ntStart+i+1}</td>
+          <td style="text-align:center;"><span class="badge badge-status-secondary" style="font-size:13px;">${n.target}</span></td>
+          <td style="text-align:center;">${n.pinned==='Y'?'<span class="badge badge-status-warning" style="font-size:13px;">Y</span>':'—'}</td>
+          <td style="text-align:left;"><a href="#" style="color:inherit;text-decoration:none;" onclick="event.preventDefault();ntOpenDetail(${n.id})">${n.title}</a></td>
+          <td style="">${n.period}</td>
           <td>${n.author}</td>
-          <td style="font-size:13px;color:var(--text-muted);">${n.regDate}</td>
-          <td style="text-align:center;">${n.postStatus==='게시'?'<span class="badge badge-success" style="font-size:11px;">게시</span>':'<span class="badge badge-secondary" style="font-size:11px;">미게시</span>'}</td>
-          <td style="text-align:right;font-size:13px;color:var(--text-muted);">${n.views.toLocaleString()}</td>
+          <td style="">${n.regDate}</td>
+          <td style="text-align:center;">${n.postStatus==='게시'?'<span class="badge badge-status-success" style="font-size:13px;">게시</span>':'<span class="badge badge-status-secondary" style="font-size:13px;">미게시</span>'}</td>
+          <td style="text-align:right;">${n.views.toLocaleString()}</td>
         </tr>`).join('');
+        const pag = wrapper.querySelector('#nt-pagination');
+        pag.innerHTML = Array.from({length: ntPages}, (_, j) => `<button class="page-btn ${j+1===ntCurrentPage?'active':''}" data-page="${j+1}">${j+1}</button>`).join('');
+        pag.querySelectorAll('.page-btn').forEach(b => b.onclick = () => { ntCurrentPage = Number(b.dataset.page); updateTable(); });
       };
 
-      window.ntOpenRegister = () => { noticeEditMode = false; selectedNoticeId = null; selectMenu('common-8','공지사항 등록'); };
+      window.ntOpenRegister = () => { noticeEditMode = false; selectedNoticeId = null; if(window.ntShowRegister) window.ntShowRegister(); };
 
       setTimeout(() => {
         const presetBtns = wrapper.querySelectorAll('.date-preset-btn');
@@ -3467,10 +3536,11 @@
             wrapper.querySelector('#nt-end').value = fmt(e);
           };
         });
-        wrapper.querySelector('#nt-btn-search').onclick = () => updateTable();
+        wrapper.querySelector('#nt-btn-search').onclick = () => { ntCurrentPage = 1; updateTable(); };
         wrapper.querySelector('#nt-btn-reset').onclick = () => {
           wrapper.querySelector('#nt-kw').value = '';
           wrapper.querySelector('input[name="nt-post-status"][value="전체"]').checked = true;
+          ntCurrentPage = 1;
           updateTable();
         };
         updateTable();
@@ -3522,7 +3592,7 @@
                 <label class="radio-item"><input type="radio" name="ntr-period-type" value="기간설정"${n&&n.period!=='무관'?' checked':''} onchange="toggleNtPeriod()"> 기간 설정</label>
                 <div id="ntr-period-range" style="${n&&n.period!=='무관'?'':'display:none;'}display:flex;align-items:center;gap:8px;">
                   <input type="date" id="ntr-period-start" class="form-control" style="width:150px;" value="${n&&n.period!=='무관'?n.period.split('~')[0]:''}">
-                  <span style="color:var(--text-muted);">~</span>
+                  <span style="">~</span>
                   <input type="date" id="ntr-period-end" class="form-control" style="width:150px;" value="${n&&n.period!=='무관'?n.period.split('~')[1]||'':''}">
                 </div>
               </div>
@@ -3540,26 +3610,59 @@
             </div>
             <div class="form-group">
               <label style="font-weight:600;font-size:13px;color:var(--text-label);">내용</label>
-              <textarea id="ntr-content" class="form-control" style="min-height:200px;resize:vertical;" placeholder="공지사항 내용을 입력해주세요.">${n?n.content:''}</textarea>
-            </div>
-            ${n&&n.files&&n.files.length>0?`
-            <div class="form-group">
-              <label style="font-weight:600;font-size:13px;color:var(--text-label);">등록된 첨부파일</label>
-              <div style="display:flex;flex-direction:column;gap:6px;">
-                ${n.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  <span style="flex:1;">${f}</span>
-                  <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.preventDefault();">삭제</button>
-                </div>`).join('')}
+              <div class="nt-editor-wrap">
+                <div class="nt-editor-toolbar" id="ntr-toolbar">
+                  <button type="button" class="nt-tool-btn" data-cmd="bold" title="굵게"><b>B</b></button>
+                  <button type="button" class="nt-tool-btn" data-cmd="italic" title="기울임"><i>I</i></button>
+                  <button type="button" class="nt-tool-btn" data-cmd="underline" title="밑줄"><u>U</u></button>
+                  <button type="button" class="nt-tool-btn" data-cmd="strikeThrough" title="취소선"><s>S</s></button>
+                  <div class="nt-tool-sep"></div>
+                  <select class="nt-tool-select" id="ntr-font-size" title="글자 크기">
+                    <option value="2">작게</option>
+                    <option value="3" selected>보통</option>
+                    <option value="5">크게</option>
+                    <option value="6">아주 크게</option>
+                  </select>
+                  <div class="nt-tool-sep"></div>
+                  <button type="button" class="nt-tool-btn" data-cmd="insertUnorderedList" title="글머리 기호 목록">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  </button>
+                  <button type="button" class="nt-tool-btn" data-cmd="insertOrderedList" title="번호 목록">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+                  </button>
+                  <div class="nt-tool-sep"></div>
+                  <button type="button" class="nt-tool-btn" data-cmd="justifyLeft" title="왼쪽 정렬">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                  </button>
+                  <button type="button" class="nt-tool-btn" data-cmd="justifyCenter" title="가운데 정렬">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="17" y1="12" x2="7" y2="12"/><line x1="19" y1="18" x2="5" y2="18"/></svg>
+                  </button>
+                  <button type="button" class="nt-tool-btn" data-cmd="justifyRight" title="오른쪽 정렬">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="12" x2="9" y2="12"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+                  </button>
+                  <div class="nt-tool-sep"></div>
+                  <button type="button" class="nt-tool-btn" data-cmd="removeFormat" title="서식 지우기">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M5 20h6"/><path d="M13 4l-4 16"/><line x1="17" y1="10" x2="22" y2="15"/><line x1="22" y1="10" x2="17" y2="15"/></svg>
+                  </button>
+                </div>
+                <div id="ntr-content" class="nt-editor-body" contenteditable="true" data-placeholder="공지사항 내용을 입력해주세요.">${n&&n.content?n.content:''}</div>
               </div>
-            </div>` : ''}
+            </div>
             <div class="form-group">
-              <label style="font-weight:600;font-size:13px;color:var(--text-label);">첨부파일 추가</label>
-              <input type="file" class="form-control" multiple style="height:auto;padding:8px;" accept=".pdf,.hwp,.doc,.docx,.xls,.xlsx,.jpg,.png">
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">첨부파일</label>
+              <div class="nt-dropzone" id="ntr-dropzone">
+                <div class="nt-dropzone-icon">
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div class="nt-dropzone-text">파일을 여기에 끌어다 놓거나 <span>클릭하여 선택</span>하세요.</div>
+                <div class="nt-dropzone-hint">PDF, HWP, DOC, DOCX, XLS, XLSX, JPG, PNG &nbsp;·&nbsp; 파일당 최대 10MB</div>
+              </div>
+              <input type="file" id="ntr-file-input" multiple hidden accept=".pdf,.hwp,.doc,.docx,.xls,.xlsx,.jpg,.png">
+              <div id="ntr-file-list" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;"></div>
             </div>
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
-            <button class="btn btn-outline" onclick="selectMenu('common-8','공지사항 목록')">목록</button>
+            <button class="btn btn-outline" onclick="ntShowList&&ntShowList()">목록</button>
             <button class="btn btn-primary" id="ntr-btn-save">${n ? '수정' : '등록'}</button>
           </div>
         </div>`;
@@ -3571,6 +3674,61 @@
       };
 
       setTimeout(() => {
+        // ── 에디터 툴바 ──
+        const editor = wrapper.querySelector('#ntr-content');
+        wrapper.querySelector('#ntr-toolbar').querySelectorAll('.nt-tool-btn').forEach(btn => {
+          btn.onmousedown = (e) => {
+            e.preventDefault();
+            document.execCommand(btn.dataset.cmd, false, null);
+            editor.focus();
+          };
+        });
+        wrapper.querySelector('#ntr-font-size').onchange = function() {
+          document.execCommand('fontSize', false, this.value);
+          editor.focus();
+        };
+        editor.addEventListener('keyup', () => {
+          wrapper.querySelector('#ntr-toolbar').querySelectorAll('.nt-tool-btn[data-cmd]').forEach(btn => {
+            try { btn.classList.toggle('active', document.queryCommandState(btn.dataset.cmd)); } catch(e) {}
+          });
+        });
+        editor.addEventListener('mouseup', () => editor.dispatchEvent(new Event('keyup')));
+
+        // ── 드래그앤드롭 파일 업로드 ──
+        const dropzone = wrapper.querySelector('#ntr-dropzone');
+        const fileInput = wrapper.querySelector('#ntr-file-input');
+        let ntrFiles = n&&n.files&&n.files.length ? n.files.map(f => ({ name: f, size: null })) : [];
+
+        const fmtSize = bytes => bytes == null ? '' : bytes < 1024*1024 ? `${(bytes/1024).toFixed(0)}KB` : `${(bytes/1024/1024).toFixed(1)}MB`;
+
+        const renderFileList = () => {
+          wrapper.querySelector('#ntr-file-list').innerHTML = ntrFiles.map((f, i) => `
+            <div class="nt-file-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="nt-file-item-name">${f.name}</span>
+              ${f.size!=null?`<span class="nt-file-item-size">${fmtSize(f.size)}</span>`:''}
+              <button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;flex-shrink:0;" onclick="ntrRemoveFile(${i})">삭제</button>
+            </div>`).join('');
+        };
+
+        dropzone.onclick = () => fileInput.click();
+        dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); };
+        dropzone.ondragleave = (e) => { if (!dropzone.contains(e.relatedTarget)) dropzone.classList.remove('drag-over'); };
+        dropzone.ondrop = (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('drag-over');
+          [...e.dataTransfer.files].forEach(f => { if (!ntrFiles.find(x => x.name===f.name)) ntrFiles.push({ name: f.name, size: f.size }); });
+          renderFileList();
+        };
+        fileInput.onchange = () => {
+          [...fileInput.files].forEach(f => { if (!ntrFiles.find(x => x.name===f.name)) ntrFiles.push({ name: f.name, size: f.size }); });
+          fileInput.value = '';
+          renderFileList();
+        };
+        window.ntrRemoveFile = (i) => { ntrFiles.splice(i, 1); renderFileList(); };
+        renderFileList();
+
+        // ── 저장 ──
         wrapper.querySelector('#ntr-btn-save').onclick = () => {
           const title = wrapper.querySelector('#ntr-title').value.trim();
           if (!title) { alert('제목을 입력해주세요.'); return; }
@@ -3584,19 +3742,20 @@
             period = ps&&pe ? `${ps}~${pe}` : '무관';
           }
           const postStatus = wrapper.querySelector('input[name="ntr-post-status"]:checked').value;
-          const content = wrapper.querySelector('#ntr-content').value;
+          const content = wrapper.querySelector('#ntr-content').innerHTML;
+          const files = ntrFiles.map(f => f.name);
           const now = new Date();
-          const fmtS = d => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+          const fmtD = d => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
           if (n) {
             const idx = noticeList.findIndex(x => x.id===n.id);
-            if (idx !== -1) noticeList[idx] = {...noticeList[idx], target, pinned, title, period, postStatus, content};
+            if (idx !== -1) noticeList[idx] = {...noticeList[idx], target, pinned, title, period, postStatus, content, files};
             alert('수정되었습니다.');
           } else {
-            noticeList.unshift({ id: Date.now(), target, pinned, title, period, author:'이희성', regDate:fmtS(now), postStatus, views:0, content, files:[] });
+            noticeList.unshift({ id: Date.now(), target, pinned, title, period, author:'이희성', regDate:fmtD(now), postStatus, views:0, content, files });
             alert('등록되었습니다.');
           }
           noticeEditMode = false;
-          selectMenu('common-8','공지사항 목록');
+          if(window.ntShowList) window.ntShowList();
         };
       }, 50);
 
@@ -3620,16 +3779,16 @@
         </div>
         <div class="manual-modal-body" style="padding:20px;max-height:70vh;overflow-y:auto;">
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border);">
-            <div><span style="font-size:12px;color:var(--text-muted);">대상구분</span><div id="resd-target" style="font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">우선노출</span><div id="resd-pinned" style="font-weight:700;margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">게시여부</span><div id="resd-status" style="font-weight:700;margin-top:4px;"></div></div>
-            <div style="grid-column:1/-1;"><span style="font-size:12px;color:var(--text-muted);">제목</span><div id="resd-title" style="font-size:16px;font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">게시기간</span><div id="resd-period" style="margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">등록자</span><div id="resd-author" style="margin-top:4px;"></div></div>
-            <div><span style="font-size:12px;color:var(--text-muted);">다운로드 수</span><div id="resd-views" style="margin-top:4px;"></div></div>
+            <div><span style="">대상구분</span><div id="resd-target" style="font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="">우선노출</span><div id="resd-pinned" style="font-weight:700;margin-top:4px;"></div></div>
+            <div><span style="">게시여부</span><div id="resd-status" style="font-weight:700;margin-top:4px;"></div></div>
+            <div style="grid-column:1/-1;"><span style="">제목</span><div id="resd-title" style="font-size:16px;font-weight:700;color:var(--navy);margin-top:4px;"></div></div>
+            <div><span style="">게시기간</span><div id="resd-period" style="margin-top:4px;"></div></div>
+            <div><span style="">등록자</span><div id="resd-author" style="margin-top:4px;"></div></div>
+            <div><span style="">다운로드 수</span><div id="resd-views" style="margin-top:4px;"></div></div>
           </div>
           <div id="resd-files-wrap" style="margin-bottom:16px;">
-            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">첨부파일 (자료)</div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">첨부파일 (자료)</div>
             <div id="resd-files" style="display:flex;flex-direction:column;gap:6px;"></div>
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--border);padding-top:14px;">
@@ -3656,8 +3815,8 @@
         selectedResourceId = id;
         r.views = (r.views||0) + 1;
         document.getElementById('resd-target').textContent = r.target;
-        document.getElementById('resd-pinned').innerHTML = r.pinned==='Y'?`<span class="badge badge-warning" style="font-size:11px;">우선노출</span>`:'—';
-        document.getElementById('resd-status').innerHTML = r.postStatus==='게시'?`<span class="badge badge-success">게시</span>`:`<span class="badge badge-secondary">미게시</span>`;
+        document.getElementById('resd-pinned').innerHTML = r.pinned==='Y'?`<span class="badge badge-status-warning" style="font-size:13px;">우선노출</span>`:'—';
+        document.getElementById('resd-status').innerHTML = r.postStatus==='게시'?`<span class="badge badge-status-success">게시</span>`:`<span class="badge badge-status-secondary">미게시</span>`;
         document.getElementById('resd-title').textContent = r.title;
         document.getElementById('resd-period').textContent = r.period;
         document.getElementById('resd-author').textContent = r.author;
@@ -3666,14 +3825,14 @@
         fd.innerHTML = r.files && r.files.length > 0 ? r.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <span style="flex:1;">${f}</span>
-          <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 미리봅니다: ${f}')">바로보기</button>
-          <button class="btn btn-primary" style="height:24px;padding:0 8px;font-size:11px;" onclick="alert('파일을 다운로드합니다: ${f}')">다운로드</button>
+          <button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;" onclick="alert('파일을 미리봅니다: ${f}')">바로보기</button>
+          <button class="btn btn-primary" style="height:28px;padding:0 8px;font-size:13px;" onclick="alert('파일을 다운로드합니다: ${f}')">다운로드</button>
         </div>`).join('') : `<div style="color:var(--text-muted);font-size:13px;padding:12px;">등록된 파일이 없습니다.</div>`;
         resUpdateTable();
         detailModal.classList.add('open');
         detailOverlay.classList.add('open');
       };
-      window.resOpenEdit = () => { resCloseDetail(); resourceEditMode = true; selectMenu('common-9','자료 등록'); };
+      window.resOpenEdit = () => { resCloseDetail(); resourceEditMode = true; if(window.resShowRegister) window.resShowRegister(); };
       window.resDeleteFromDetail = () => {
         const r = resourceList.find(x => x.id===selectedResourceId);
         if (!r) return;
@@ -3689,7 +3848,7 @@
         <div class="card search-card">
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
             <div class="card-title" style="margin:0;">검색 조건</div>
-            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:11px;padding:3px 10px;">ERP 연동 필요</span>
+            <span class="badge" style="background:var(--amber-lt);color:var(--amber-dk);border:1px solid var(--amber-md);font-size:13px;padding:3px 10px;">ERP 연동 필요</span>
           </div>
           <div style="display:flex;flex-direction:column;gap:12px;">
             <div class="form-group" style="display:flex;flex-direction:row;align-items:center;gap:12px;">
@@ -3702,7 +3861,7 @@
                   <button type="button" class="date-preset-btn" data-preset="1y">1년</button>
                 </div>
                 <input type="date" id="res-start" class="form-control" style="width:150px;" value="2026-01-01">
-                <span style="color:var(--text-muted);">~</span>
+                <span style="">~</span>
                 <input type="date" id="res-end" class="form-control" style="width:150px;" value="2026-06-30">
               </div>
             </div>
@@ -3736,15 +3895,13 @@
         </div>
 
         <div class="card">
+          <div class="card-title" style="margin:0;">자료실 목록</div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
-            <div class="card-title" style="margin:0;">자료실 목록</div>
-            <div style="display:flex;gap:8px;align-items:center;">
-              <span style="font-size:13px;color:var(--text-muted);">전체 <strong id="res-total" style="color:var(--blue);">0</strong>건</span>
-              <button class="btn btn-primary" onclick="resOpenRegister()" style="height:32px;padding:0 14px;font-size:13px;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                등록
-              </button>
-            </div>
+            <div style="font-size:13px; color:var(--text-muted);">전체 <strong id="res-total" style="color:var(--blue);">0</strong>건 &nbsp;|&nbsp; 현재 <strong id="res-current-page" style="color:var(--text);">1/1</strong> 페이지</div>
+            <button class="btn btn-primary" onclick="resOpenRegister()" style="height:32px;padding:0 14px;font-size:13px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              등록
+            </button>
           </div>
           <div class="table-container">
             <table class="data-table">
@@ -3764,8 +3921,11 @@
               <tbody id="res-tbody"></tbody>
             </table>
           </div>
+          <div class="table-footer" style="margin-top:20px; border-top:1px solid var(--border); padding-top:14px;"><div></div><div class="pagination" id="res-pagination"></div><div></div></div>
         </div>`;
 
+      let resCurrentPage = 1;
+      const resPageSize = 10;
       const resUpdateTable = window.resUpdateTable = () => {
         const key = wrapper.querySelector('#res-key').value;
         const kw = wrapper.querySelector('#res-kw').value.toLowerCase().trim();
@@ -3780,21 +3940,29 @@
           }
           return true;
         });
-        wrapper.querySelector('#res-total').textContent = filtered.length;
-        wrapper.querySelector('#res-tbody').innerHTML = filtered.map((r, i) => `<tr>
-          <td style="text-align:center;color:var(--text-muted);font-size:13px;">${i+1}</td>
-          <td style="text-align:center;"><span class="badge badge-secondary" style="font-size:11px;">${r.target}</span></td>
-          <td style="text-align:center;">${r.pinned==='Y'?'<span class="badge badge-warning" style="font-size:11px;">Y</span>':'—'}</td>
-          <td style="text-align:left;"><a href="#" style="color:var(--blue);text-decoration:none;font-weight:500;" onclick="event.preventDefault();resOpenDetail(${r.id})">${r.title}</a></td>
-          <td style="font-size:13px;color:var(--text-muted);">${r.period}</td>
+        const resTotal = filtered.length, resPages = Math.ceil(resTotal/resPageSize)||1;
+        if (resCurrentPage > resPages) resCurrentPage = resPages;
+        const resStart = (resCurrentPage-1)*resPageSize;
+        const resPaged = filtered.slice(resStart, resStart+resPageSize);
+        wrapper.querySelector('#res-total').textContent = resTotal;
+        wrapper.querySelector('#res-current-page').textContent = `${resCurrentPage}/${resPages}`;
+        wrapper.querySelector('#res-tbody').innerHTML = resPaged.map((r, i) => `<tr>
+          <td style="text-align:center;">${resStart+i+1}</td>
+          <td style="text-align:center;"><span class="badge badge-status-secondary" style="font-size:13px;">${r.target}</span></td>
+          <td style="text-align:center;">${r.pinned==='Y'?'<span class="badge badge-status-warning" style="font-size:13px;">Y</span>':'—'}</td>
+          <td style="text-align:left;"><a href="#" style="color:inherit;text-decoration:none;" onclick="event.preventDefault();resOpenDetail(${r.id})">${r.title}</a></td>
+          <td style="">${r.period}</td>
           <td>${r.author}</td>
-          <td style="font-size:13px;color:var(--text-muted);">${r.regDate}</td>
-          <td style="text-align:center;">${r.postStatus==='게시'?'<span class="badge badge-success" style="font-size:11px;">게시</span>':'<span class="badge badge-secondary" style="font-size:11px;">미게시</span>'}</td>
-          <td style="text-align:right;font-size:13px;color:var(--text-muted);">${r.views.toLocaleString()}</td>
+          <td style="">${r.regDate}</td>
+          <td style="text-align:center;">${r.postStatus==='게시'?'<span class="badge badge-status-success" style="font-size:13px;">게시</span>':'<span class="badge badge-status-secondary" style="font-size:13px;">미게시</span>'}</td>
+          <td style="text-align:right;">${r.views.toLocaleString()}</td>
         </tr>`).join('');
+        const resPag = wrapper.querySelector('#res-pagination');
+        resPag.innerHTML = Array.from({length: resPages}, (_, j) => `<button class="page-btn ${j+1===resCurrentPage?'active':''}" data-page="${j+1}">${j+1}</button>`).join('');
+        resPag.querySelectorAll('.page-btn').forEach(b => b.onclick = () => { resCurrentPage = Number(b.dataset.page); resUpdateTable(); });
       };
 
-      window.resOpenRegister = () => { resourceEditMode = false; selectedResourceId = null; selectMenu('common-9','자료 등록'); };
+      window.resOpenRegister = () => { resourceEditMode = false; selectedResourceId = null; if(window.resShowRegister) window.resShowRegister(); };
 
       setTimeout(() => {
         const presetBtns = wrapper.querySelectorAll('.date-preset-btn');
@@ -3813,10 +3981,11 @@
             wrapper.querySelector('#res-end').value = fmt(e);
           };
         });
-        wrapper.querySelector('#res-btn-search').onclick = () => resUpdateTable();
+        wrapper.querySelector('#res-btn-search').onclick = () => { resCurrentPage = 1; resUpdateTable(); };
         wrapper.querySelector('#res-btn-reset').onclick = () => {
           wrapper.querySelector('#res-kw').value = '';
           wrapper.querySelector('input[name="res-post-status"][value="전체"]').checked = true;
+          resCurrentPage = 1;
           resUpdateTable();
         };
         resUpdateTable();
@@ -3867,7 +4036,7 @@
                 <label class="radio-item"><input type="radio" name="resr-period-type" value="기간설정"${r&&r.period!=='무관'?' checked':''} onchange="toggleResPeriod()"> 기간 설정</label>
                 <div id="resr-period-range" style="${r&&r.period!=='무관'?'':'display:none;'}display:flex;align-items:center;gap:8px;">
                   <input type="date" id="resr-period-start" class="form-control" style="width:150px;" value="${r&&r.period!=='무관'?r.period.split('~')[0]:''}">
-                  <span style="color:var(--text-muted);">~</span>
+                  <span style="">~</span>
                   <input type="date" id="resr-period-end" class="form-control" style="width:150px;" value="${r&&r.period!=='무관'?r.period.split('~')[1]||'':''}">
                 </div>
               </div>
@@ -3883,25 +4052,21 @@
               <label style="font-weight:600;font-size:13px;color:var(--text-label);">등록자</label>
               <input type="text" class="form-control" value="${r?r.author:'이희성'}" readonly style="width:200px;background:var(--bg);color:var(--text-muted);cursor:not-allowed;">
             </div>
-            ${r&&r.files&&r.files.length>0?`
             <div class="form-group">
-              <label style="font-weight:600;font-size:13px;color:var(--text-label);">등록된 첨부파일</label>
-              <div style="display:flex;flex-direction:column;gap:6px;">
-                ${r.files.map(f=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:13px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                  <span style="flex:1;">${f}</span>
-                  <button class="btn btn-outline" style="height:24px;padding:0 8px;font-size:11px;color:var(--red-dk);border-color:var(--red-md);" onclick="event.preventDefault();">삭제</button>
-                </div>`).join('')}
+              <label style="font-weight:600;font-size:13px;color:var(--text-label);">첨부파일 <span class="required">*</span></label>
+              <div class="nt-dropzone" id="resr-dropzone">
+                <div class="nt-dropzone-icon">
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div class="nt-dropzone-text">파일을 여기에 끌어다 놓거나 <span>클릭하여 선택</span>하세요.</div>
+                <div class="nt-dropzone-hint">PDF, HWP, Word, Excel, PowerPoint &nbsp;·&nbsp; 파일당 최대 50MB</div>
               </div>
-            </div>` : ''}
-            <div class="form-group">
-              <label style="font-weight:600;font-size:13px;color:var(--text-label);">첨부파일 추가 <span class="required">*</span></label>
-              <input type="file" id="resr-files" class="form-control" multiple style="height:auto;padding:8px;" accept=".pdf,.hwp,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
-              <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">지원 형식: PDF, HWP, Word, Excel, PowerPoint (최대 50MB)</div>
+              <input type="file" id="resr-file-input" multiple hidden accept=".pdf,.hwp,.doc,.docx,.xls,.xlsx,.ppt,.pptx">
+              <div id="resr-file-list" style="display:flex;flex-direction:column;gap:6px;margin-top:8px;"></div>
             </div>
           </div>
           <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
-            <button class="btn btn-outline" onclick="selectMenu('common-9','자료실 목록')">목록</button>
+            <button class="btn btn-outline" onclick="resShowList&&resShowList()">목록</button>
             <button class="btn btn-primary" id="resr-btn-save">${r ? '수정' : '등록'}</button>
           </div>
         </div>`;
@@ -3913,6 +4078,40 @@
       };
 
       setTimeout(() => {
+        // ── 드래그앤드롭 파일 업로드 ──
+        const dropzone = wrapper.querySelector('#resr-dropzone');
+        const fileInput = wrapper.querySelector('#resr-file-input');
+        let resrFiles = r&&r.files&&r.files.length ? r.files.map(f => ({ name: f, size: null })) : [];
+
+        const fmtSize = bytes => bytes == null ? '' : bytes < 1024*1024 ? `${(bytes/1024).toFixed(0)}KB` : `${(bytes/1024/1024).toFixed(1)}MB`;
+
+        const renderFileList = () => {
+          wrapper.querySelector('#resr-file-list').innerHTML = resrFiles.map((f, i) => `
+            <div class="nt-file-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              <span class="nt-file-item-name">${f.name}</span>
+              ${f.size!=null?`<span class="nt-file-item-size">${fmtSize(f.size)}</span>`:''}
+              <button class="btn btn-outline" style="height:28px;padding:0 8px;font-size:13px;flex-shrink:0;" onclick="resrRemoveFile(${i})">삭제</button>
+            </div>`).join('');
+        };
+
+        dropzone.onclick = () => fileInput.click();
+        dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); };
+        dropzone.ondragleave = (e) => { if (!dropzone.contains(e.relatedTarget)) dropzone.classList.remove('drag-over'); };
+        dropzone.ondrop = (e) => {
+          e.preventDefault();
+          dropzone.classList.remove('drag-over');
+          [...e.dataTransfer.files].forEach(f => { if (!resrFiles.find(x => x.name===f.name)) resrFiles.push({ name: f.name, size: f.size }); });
+          renderFileList();
+        };
+        fileInput.onchange = () => {
+          [...fileInput.files].forEach(f => { if (!resrFiles.find(x => x.name===f.name)) resrFiles.push({ name: f.name, size: f.size }); });
+          fileInput.value = '';
+          renderFileList();
+        };
+        window.resrRemoveFile = (i) => { resrFiles.splice(i, 1); renderFileList(); };
+        renderFileList();
+
         wrapper.querySelector('#resr-btn-save').onclick = () => {
           const title = wrapper.querySelector('#resr-title').value.trim();
           if (!title) { alert('제목을 입력해주세요.'); return; }
@@ -3928,25 +4127,71 @@
           const postStatus = wrapper.querySelector('input[name="resr-post-status"]:checked').value;
           const now = new Date();
           const fmtS = d => `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
-          const files = [];
-          const fileInput = wrapper.querySelector('#resr-files');
-          if (fileInput && fileInput.files.length > 0) {
-            Array.from(fileInput.files).forEach(f => files.push(f.name));
-          }
+          const files = resrFiles.map(f => f.name);
           if (r) {
             const idx = resourceList.findIndex(x => x.id===r.id);
-            if (idx !== -1) resourceList[idx] = {...resourceList[idx], target, pinned, title, period, postStatus, files: files.length>0?files:r.files};
+            if (idx !== -1) resourceList[idx] = {...resourceList[idx], target, pinned, title, period, postStatus, files};
             alert('수정되었습니다.');
           } else {
             resourceList.unshift({ id: Date.now(), target, pinned, title, period, author:'이희성', regDate:fmtS(now), postStatus, views:0, content:'', files });
             alert('등록되었습니다.');
           }
           resourceEditMode = false;
-          selectMenu('common-9','자료실 목록');
+          if(window.resShowList) window.resShowList();
         };
       }, 50);
 
       return wrapper;
     }
 
+    /* ── 래퍼: 권한그룹 및 권한 관리 ── */
+    function getAuthGroupManageTemplate() {
+      const outer = document.createElement('div');
+      outer.style.cssText = 'height:100%;display:flex;flex-direction:column;';
+      const inner = document.createElement('div');
+      inner.style.cssText = 'flex:1;';
+      outer.appendChild(inner);
+      window.authShowList = () => { inner.innerHTML = ''; inner.appendChild(getAuthGroupListTemplate()); };
+      window.authShowRegister = () => { inner.innerHTML = ''; inner.appendChild(getAuthGroupSettingTemplate()); };
+      window.authShowList();
+      return outer;
+    }
 
+    /* ── 래퍼: 협력업체 관리 ── */
+    function getPartnerManageTemplate() {
+      const outer = document.createElement('div');
+      outer.style.cssText = 'height:100%;display:flex;flex-direction:column;';
+      const inner = document.createElement('div');
+      inner.style.cssText = 'flex:1;';
+      outer.appendChild(inner);
+      window.partnerShowList = () => { inner.innerHTML = ''; inner.appendChild(getPartnerListTemplate()); };
+      window.partnerShowDetail = () => { inner.innerHTML = ''; inner.appendChild(getPartnerDetailTemplate()); };
+      window.partnerShowList();
+      return outer;
+    }
+
+    /* ── 래퍼: 공지사항 관리 ── */
+    function getNoticeManageTemplate() {
+      const outer = document.createElement('div');
+      outer.style.cssText = 'height:100%;display:flex;flex-direction:column;';
+      const inner = document.createElement('div');
+      inner.style.cssText = 'flex:1;';
+      outer.appendChild(inner);
+      window.ntShowList = () => { inner.innerHTML = ''; inner.appendChild(getNoticeListTemplate()); };
+      window.ntShowRegister = () => { inner.innerHTML = ''; inner.appendChild(getNoticeRegisterTemplate()); };
+      window.ntShowList();
+      return outer;
+    }
+
+    /* ── 래퍼: 자료실 관리 ── */
+    function getResourceManageTemplate() {
+      const outer = document.createElement('div');
+      outer.style.cssText = 'height:100%;display:flex;flex-direction:column;';
+      const inner = document.createElement('div');
+      inner.style.cssText = 'flex:1;';
+      outer.appendChild(inner);
+      window.resShowList = () => { inner.innerHTML = ''; inner.appendChild(getResourceListTemplate()); };
+      window.resShowRegister = () => { inner.innerHTML = ''; inner.appendChild(getResourceRegisterTemplate()); };
+      window.resShowList();
+      return outer;
+    }

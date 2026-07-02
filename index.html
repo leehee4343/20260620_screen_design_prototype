@@ -160,7 +160,7 @@
       <button class="manual-modal-close" onclick="closeAdminDetail()">×</button>
     </div>
     <div class="manual-modal-body">
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px;">
+      <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:20px;">
         <div class="form-group">
           <label style="font-weight:600; font-size:13px; color:var(--text-label);">사원번호</label>
           <input type="text" id="detail-empNo" class="form-control" readonly style="background-color:var(--bg); color:var(--text-muted); cursor:not-allowed;">
@@ -188,7 +188,7 @@
       </div>
       <div style="border-top:1.5px solid var(--border); padding-top:16px; margin-bottom:20px;">
         <h4 style="font-size:14px; font-weight:700; color:var(--navy); margin-bottom:12px;">수정/등록 항목</h4>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;">
+        <div style="display:flex; flex-direction:column; gap:16px;">
           <div class="form-group">
             <label style="font-weight:600; font-size:13px; color:var(--text-label);">사용여부 <span style="color:var(--red);">*</span></label>
             <div class="radio-group" style="display:flex; gap:16px; height:38px; align-items:center;">
@@ -207,7 +207,7 @@
         <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;" id="detail-auth-groups">
         </div>
       </div>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px; background-color:var(--bg); padding:10px; border-radius:6px; font-size:13px; color:var(--text-muted); border:1px dashed var(--border);">
+      <div style="display:flex; flex-direction:column; gap:8px; background-color:var(--bg); padding:10px; border-radius:6px; font-size:13px; color:var(--text-muted); border:1px dashed var(--border);">
         <div>• 등록자: <span id="detail-regUser"></span> (<span id="detail-regDate"></span>)</div>
         <div>• 최종수정일시: <span id="detail-editDate"></span></div>
       </div>
